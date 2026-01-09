@@ -46,10 +46,10 @@ We expect to use **deep learning models for computer vision**, specifically conv
 
 ## MLOps
 
-From an MLOps point of view, this project will focus on:
+We will use the skills we gain during this MLOps course to work on:
 
 - Reproducible data loading and preprocessing pipelines
-- Configuration-driven training (e.g. learning rate, batch size)
+- Configuration driven training (e.g. learning rate, batch size)
 - Experiment tracking and comparison
 - Model evaluation and validation
 - Preparing the model for deployment as a simple application or API
@@ -65,7 +65,7 @@ As a final outcome, we aim to demonstrate a simple prototype application where:
 - The backend runs the trained model
 - The predicted nutritional values are returned to the user
 
-This may be implemented as a minimal web application or API, depending on time constraints.
+This may be implemented as a minimal web application or API.
 
 ---
 
