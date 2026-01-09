@@ -9,9 +9,7 @@ The goal of this project is to develop a machine learning system that can **pred
 - Total fat (grams)
 - Total carbohydrates (grams)
 
-The long-term vision of the project is an **end-user application** where a user uploads an image of a meal and receives an automatic nutritional estimate. Such a system could support applications in dietary tracking, health monitoring, and food logging.
-
-This project fits well within the scope of the course, as it combines computer vision, regression modeling, data pipelines, experiment tracking, and deployment considerations in an MLOps setting.
+The long term vision of the project is an **end-user application** where a user uploads an image of a meal and receives an automatic nutritional estimate. Such a system could support applications in dietary tracking, health monitoring, and food logging.
 
 ---
 
@@ -28,9 +26,7 @@ Initially, we will use the **Food Nutrients dataset** hosted on Hugging Face:
     - Fat
     - Carbohydrates
 
-This dataset is well-suited for our task because it directly links **images to numeric nutrition targets**, allowing us to formulate the problem as a **multi-output regression task**. While the dataset is relatively small compared to large-scale image datasets, it is clean, well-structured, and realistic, making it appropriate for experimentation and evaluation in an academic setting.
-
-If time permits, we may explore augmenting the dataset or combining it with additional food image datasets for pretraining or representation learning.
+This dataset is well-suited for our task because it directly links **images to numeric nutrition targets**, allowing us to formulate the problem as a **multi-output regression task**. While the dataset is relatively small compared to large-scale image datasets, it is clean, well-structured, and realistic, making it appropriate for experimentation and evaluation. We may explore augmenting the dataset or combining it with additional food image datasets for pretraining or representation learning.
 
 ---
 
@@ -38,19 +34,17 @@ If time permits, we may explore augmenting the dataset or combining it with addi
 
 We expect to use **deep learning models for computer vision**, specifically convolutional neural networks (CNNs). The planned modeling strategy includes:
 
-- A pretrained CNN backbone (e.g. ResNet, EfficientNet, or similar) for image feature extraction
+- A pretrained CNN backbone (e.g. ResNet, EfficientNet, or similar)
 - A regression head that outputs four continuous values:
   - Calories
-  - Protein
-  - Fat
-  - Carbohydrates
+  - Protein (grams)
+  - Fat (grams)
+  - Carbohydrates (grams)
 - A multi-task loss function (e.g. mean squared error or mean absolute error across outputs)
-
-Transfer learning will likely be used to compensate for limited dataset size and to speed up convergence.
 
 ---
 
-## MLOps Perspective
+## MLOps
 
 From an MLOps point of view, this project will focus on:
 
@@ -64,7 +58,7 @@ The project is designed to be incrementally developed, with a clear path from ex
 
 ---
 
-## (Optional) Product & Deployment Vision
+## Product, Deployment and Long Term Vision
 
 As a final outcome, we aim to demonstrate a simple prototype application where:
 - A user uploads a food image
@@ -72,16 +66,6 @@ As a final outcome, we aim to demonstrate a simple prototype application where:
 - The predicted nutritional values are returned to the user
 
 This may be implemented as a minimal web application or API, depending on time constraints.
-
----
-
-## Current Status
-
-- Project idea defined
-- Dataset selected and reviewed
-- Initial project structure being set up
-
-Further implementation details will be added iteratively throughout the course.
 
 ---
 
