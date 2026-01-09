@@ -65,7 +65,7 @@ As a final outcome, we aim to demonstrate a simple prototype application where:
 - The backend runs the trained model
 - The predicted nutritional values are returned to the user
 
-This may be implemented as a minimal web application or API.
+This may be implemented as a minimal web application (GradIO) or API.
 
 ---
 
