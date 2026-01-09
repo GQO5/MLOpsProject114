@@ -34,7 +34,7 @@ This dataset is well-suited for our task because it directly links **images to n
 
 We expect to use **deep learning models for computer vision**, specifically convolutional neural networks (CNNs). The planned modeling strategy includes:
 
-- A pretrained CNN backbone (e.g. ResNet, EfficientNet, or similar)
+- A pretrained CNN backbone (e.g. https://huggingface.co/VinnyVortex004/Food101-Classifier)
 - A regression head that outputs four continuous values:
   - Calories
   - Protein (grams)
