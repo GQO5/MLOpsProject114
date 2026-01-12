@@ -1,16 +1,32 @@
-from torch import nn
+import os
+
 import torch
+import torch.nn as nn
+from torchvision import models
 
-class Model(nn.Module):
-    """Just a dummy model to show how to structure your code"""
-    def __init__(self):
-        super().__init__()
-        self.layer = nn.Linear(1, 1)
+# data paths and configuration
+DATA_ROOT = os.path.join(os.path.dirname(__file__), "../../data/food-nutrients")
+MODEL_PATH = os.path.join(DATA_ROOT, "food101_model.pth")
+TARGET_COLS = ["total_calories", "total_fat", "total_carb", "total_protein"]
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.layer(x)
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-if __name__ == "__main__":
-    model = Model()
-    x = torch.rand(1)
-    print(f"Output shape of model: {model(x).shape}")
+
+def load_model():
+    # 1 load pretrained resnet50 with food101 weights
+    # 2 replace classification head with regression head
+    # 3 move to appropriate device
+
+    # verify pretrained model exists
+    assert os.path.exists(MODEL_PATH), f"model not found: {MODEL_PATH}"
+
+    # load resnet50 with food101 weights, replace head for regression
+    model = models.resnet50(weights=None, num_classes=101)
+    state = torch.load(MODEL_PATH, map_location="cpu")
+    model.load_state_dict(state)
+
+    in_features = model.fc.in_features
+    model.fc = nn.Linear(in_features, len(TARGET_COLS))
+    model = model.to(DEVICE)
+
+    return model

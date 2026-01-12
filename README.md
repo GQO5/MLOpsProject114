@@ -69,6 +69,109 @@ This may be implemented as a minimal web application (GradIO) or API.
 
 ---
 
+## To run
+
+### 1. Prerequisites
+- [uv](https://github.com/astral-sh/uv) package manager
+
+### 2. Install Dependencies
+```bash
+# Install core dependencies
+uv sync
+
+# Install development dependencies
+uv sync --extra dev
+```
+
+### 3. Setup Data
+The project requires the Food Nutrients dataset. Download and place the data files:
+Note: Dataset is included in repository as HF has limited downloads
+```bash
+# Create data directory structure
+mkdir -p data
+
+# Download the dataset from Hugging Face
+# Visit: https://huggingface.co/datasets/mmathys/food-nutrients
+# Download:
+# - metadata.jsonl → data/food-nutrients/
+# - All test images → data/food-nutrients/test/
+# Download the model from
+# - food101_model.pth → https://huggingface.co/VinnyVortex004/Food101-Classifier 
+
+```
+Keep folder hierarchy as: 
+
+```
+data/
+└── food-nutrients/
+    ├── metadata.jsonl          # Dataset metadata and annotations
+    ├── food101_model.pth       # Pretrained Food101 model weights
+    └── test/                   
+        ├── dish_1556572657.png 
+        ├── dish_1556573514.png
+        └── ...                 # All other test images
+```
+### 4. Run the Pipeline
+
+#### Data Preprocessing
+```bash
+# Load and preprocess the data
+uv run invoke preprocess-data
+```
+
+#### Train the Model
+```bash
+# Train the nutrition estimation model
+uv run invoke train
+```
+This will:
+- Load the pretrained Food101 model
+- Fine-tune for nutrition regression
+- Evaluate on test set
+- Generate and save plots to `reports/figures/`
+- Save the trained model to `models/` with timestamp
+
+### 5. Development Workflow
+
+#### Run Tests
+```bash
+uv run invoke test
+```
+
+#### Run Linting
+```bash
+uv run ruff check src/
+uv run ruff format src/
+```
+
+#### Update Dependencies
+After making changes to `pyproject.toml`:
+```bash
+# Update the lock file
+uv lock
+
+# Update requirements.txt (production dependencies)
+uv export --format requirements-txt --no-dev > requirements.txt
+
+# Update requirements_dev.txt (all dependencies)
+uv export --format requirements-txt > requirements_dev.txt
+```
+
+#### Build Documentation
+```bash
+#not yet
+uv run mkdocs serve
+```
+
+### 6. Using the Tasks
+
+All available tasks can be listed with:
+```bash
+uv run invoke --list
+```
+
+---
+
 ## Project structure
 
 The directory structure of the project looks like this:
