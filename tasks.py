@@ -29,7 +29,7 @@ def dev_requirements(ctx: Context) -> None:
     """Install development requirements."""
     ctx.run('pip install -e .["dev"]', echo=True, pty=not WINDOWS)
 
-# Project commands
+# Project commandssds
 @task
 def preprocess_data(ctx: Context) -> None:
     """Preprocess data."""
