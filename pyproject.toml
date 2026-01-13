@@ -1,11 +1,14 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "mlopsproject"
 version = "0.0.1"
 description = "A short description of the project."
+readme = "README.md"
+requires-python = ">=3.11"
+
 authors = [
   { name = "Team_114", email = "your@email.com" },
 ]
@@ -15,16 +18,22 @@ classifiers = [
   "Development Status :: 3 - Alpha",
   "Programming Language :: Python :: 3",
 ]
-readme = "README.md"
 
-requires-python = ">=3.11"
-dynamic = ["dependencies", "optional-dependencies"]
+# IMPORTANT:
+# Put your runtime dependencies here WITHOUT any '--hash' parts.
+# Example: "aiohttp==3.13.3"
+dependencies = [
+  # "aiohappyeyeballs==2.6.1",
+  # "aiohttp==3.13.3",
+]
 
-[tool.setuptools.dynamic]
-dependencies = { file = ["requirements.txt"] }
-
-[tool.setuptools.dynamic.optional-dependencies]
-dev = { file = ["requirements_dev.txt"] }
+[project.optional-dependencies]
+# Put your dev/test/lint dependencies here (again, NO '--hash').
+dev = [
+  # "pytest",
+  # "coverage",
+  # "ruff",
+]
 
 [tool.ruff]
 line-length = 120
