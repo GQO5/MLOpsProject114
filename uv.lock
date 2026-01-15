@@ -1058,6 +1058,7 @@ name = "mlopsproject"
 version = "0.0.1"
 source = { editable = "." }
 dependencies = [
+    { name = "coverage" },
     { name = "datasets" },
     { name = "fastapi" },
     { name = "matplotlib" },
@@ -1083,6 +1084,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "coverage", specifier = ">=7.8.0" },
     { name = "coverage", marker = "extra == 'dev'", specifier = "==7.8.0" },
     { name = "datasets", specifier = "==3.2.0" },
     { name = "fastapi", specifier = "==0.115.12" },
