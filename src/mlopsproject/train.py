@@ -19,119 +19,121 @@ from mlopsproject.model import DEVICE, load_model
 from mlopsproject.visualize import visualize
 
 
-def train():
-    # 1 load data and pretrained model
-    # 2 two-phase training: head-only then full fine-tuning
-    # 3 evaluate and save model
-    # 4 generate visualizations
+def set_finetune(model, finetune):
+    """Configure model parameters for fine-tuning or head-only training."""
+    if finetune:
+        print("Fine-tuning all model parameters.")
+        for param in model.parameters():
+            param.requires_grad = finetune
+    else:
+        print("Freezing backbone parameters; training head only.")
+        for name, param in model.named_parameters():
+            param.requires_grad = name.startswith("fc.")
 
-    # load data and model
-    train_loader, val_loader, test_loader, train_raw, val_raw, test_raw, y_mean, y_std = load_data()
-    model = load_model()
 
-    mse_loss = nn.MSELoss()
+class Food101ResNet50:
+    def __init__(self, criterion, optimizer, scheduler, device, model, finetune):
+        self.model = model
+        self.criterion = criterion
+        self.finetune = finetune
+        set_finetune(self.model, self.finetune)
+        self.optimizer = optimizer(params=self.model.parameters())
+        self.scheduler = scheduler(optimizer=self.optimizer)
+        self.device = device
 
-    # training hyperparameters
-    epochs_head = 1
-    epochs_ft = 1
-    lr_head = 1e-3
-    lr_ft = 1e-4
+    def train(self, total_epochs=250, validation_interval=10):
+        # 1 load data and pretrained model
+        # 2 two-phase training: head-only then full fine-tuning
+        # 3 evaluate and save model
+        # 4 generate visualizations
 
-    use_amp = DEVICE == "cuda"
-    scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
+        # load data and model
+        (
+            train_loader,
+            val_loader,
+            test_loader,
+            train_raw,
+            val_raw,
+            test_raw,
+            y_mean,
+            y_std,
+        ) = load_data()
 
-    # training history for visualization
-    history = {"epoch": [], "train_mse": [], "val_mse": [], "val_mae_per": [], "val_r2_per": []}
+        use_amp = self.device == "cuda"
+        scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
 
-    target_cols = ["total_calories", "total_fat", "total_carb", "total_protein"]
+        # training history for visualization
+        history = {
+            "epoch": [],
+            "train_mse": [],
+            "val_mse": [],
+            "val_mae_per": [],
+            "val_r2_per": [],
+        }
 
-    # phase a: train regression head only (freeze backbone)
-    # this prevents catastrophic forgetting of pretrained features
-    for name, p in model.named_parameters():
-        p.requires_grad = name.startswith("fc.")
-    optimizer = optim.AdamW(filter(lambda p: p.requires_grad, model.parameters()), lr=lr_head)
+        target_cols = ["total_calories", "total_fat", "total_carb", "total_protein"]
 
-    for epoch in range(1, epochs_head + 1):
-        model.train()
-        for x, y in tqdm(train_loader, desc=f"[Head] Epoch {epoch}/{epochs_head}"):
-            x = x.to(DEVICE, non_blocking=True)
-            y = y.to(DEVICE, non_blocking=True)
+        for epoch in range(1, total_epochs + 1):
+            self.model.train()
+            for x, y in tqdm(train_loader, desc=f"[Head] Epoch {epoch}/{total_epochs}"):
+                x = x.to(DEVICE, non_blocking=True)
+                y = y.to(DEVICE, non_blocking=True)
 
-            optimizer.zero_grad(set_to_none=True)
-            with torch.amp.autocast("cuda", enabled=use_amp):
-                pred = model(x)
-                loss = mse_loss(pred, y)
+                self.optimizer.zero_grad(set_to_none=True)
+                with torch.amp.autocast("cuda", enabled=use_amp):
+                    pred = self.model(x)
+                    loss = self.criterion(pred, y)
 
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
+                scaler.scale(loss).backward()
+                scaler.step(self.optimizer)
+                scaler.update()
 
-        train_mse, _, _, _, _ = evaluate(model, train_loader, y_mean, y_std)
-        val_mse, val_mae_per, val_r2_per, _, _ = evaluate(model, val_loader, y_mean, y_std)
+            train_mse, _, _, _, _ = evaluate(self.model, train_loader, y_mean, y_std)
+            val_mse, val_mae_per, val_r2_per, _, _ = evaluate(
+                self.model, val_loader, y_mean, y_std
+            )
 
-        history["epoch"].append(epoch)
-        history["train_mse"].append(train_mse)
-        history["val_mse"].append(val_mse)
-        history["val_mae_per"].append(val_mae_per)
-        history["val_r2_per"].append(val_r2_per)
+            history["epoch"].append(epoch)
+            history["train_mse"].append(train_mse)
+            history["val_mse"].append(val_mse)
+            history["val_mae_per"].append(val_mae_per)
+            history["val_r2_per"].append(val_r2_per)
 
-        mae_str = " | ".join([f"{n.split('total_')[-1]}:{v:.1f}" for n, v in zip(target_cols, val_mae_per)])
-        r2_str = " | ".join([f"{n.split('total_')[-1]}:{v:.3f}" for n, v in zip(target_cols, val_r2_per)])
-        print(f"[Head] epoch={epoch} trainMSE={train_mse:.4f} valMSE={val_mse:.4f}")
-        print("      val MAE:", mae_str)
-        print("      val R2 :", r2_str)
+            mae_str = " | ".join(
+                [
+                    f"{n.split('total_')[-1]}:{v:.1f}"
+                    for n, v in zip(target_cols, val_mae_per)
+                ]
+            )
+            r2_str = " | ".join(
+                [
+                    f"{n.split('total_')[-1]}:{v:.3f}"
+                    for n, v in zip(target_cols, val_r2_per)
+                ]
+            )
+            print(f"[Head] epoch={epoch} trainMSE={train_mse:.4f} valMSE={val_mse:.4f}")
+            print("      val MAE:", mae_str)
+            print("      val R2 :", r2_str)
 
-    # phase b: unfreeze all layers, fine-tune entire model
-    # lower learning rate to avoid destroying pretrained features
-    for p in model.parameters():
-        p.requires_grad = True
-    optimizer = optim.AdamW(model.parameters(), lr=lr_ft)
+        # save trained model with timestamp
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        model_save_path = os.path.join(
+            os.path.dirname(__file__),
+            "../../models",
+            f"model_{timestamp}_FT_{self.finetune}.pth",
+        )
+        os.makedirs(os.path.dirname(model_save_path), exist_ok=True)
+        torch.save(self.model.state_dict(), model_save_path)
+        print(f"Model saved to {model_save_path}")
 
-    for e in range(1, epochs_ft + 1):
-        epoch = epochs_head + e
-        model.train()
-        for x, y in tqdm(train_loader, desc=f"[FT] Epoch {e}/{epochs_ft}"):
-            x = x.to(DEVICE, non_blocking=True)
-            y = y.to(DEVICE, non_blocking=True)
+        # generate evaluation plots and sample predictions
+        print("\nRunning visualization...")
+        visualize(self.model, history, y_mean, y_std, test_loader, test_raw)
+        print("Visualization complete!")
 
-            optimizer.zero_grad(set_to_none=True)
-            with torch.amp.autocast("cuda", enabled=use_amp):
-                pred = model(x)
-                loss = mse_loss(pred, y)
-
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
-
-        train_mse, _, _, _, _ = evaluate(model, train_loader, y_mean, y_std)
-        val_mse, val_mae_per, val_r2_per, _, _ = evaluate(model, val_loader, y_mean, y_std)
-
-        history["epoch"].append(epoch)
-        history["train_mse"].append(train_mse)
-        history["val_mse"].append(val_mse)
-        history["val_mae_per"].append(val_mae_per)
-        history["val_r2_per"].append(val_r2_per)
-
-        mae_str = " | ".join([f"{n.split('total_')[-1]}:{v:.1f}" for n, v in zip(target_cols, val_mae_per)])
-        r2_str = " | ".join([f"{n.split('total_')[-1]}:{v:.3f}" for n, v in zip(target_cols, val_r2_per)])
-        print(f"[FT] epoch={epoch} trainMSE={train_mse:.4f} valMSE={val_mse:.4f}")
-        print("     val MAE:", mae_str)
-        print("     val R2 :", r2_str)
-
-    # save trained model with timestamp
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    model_save_path = os.path.join(os.path.dirname(__file__), "../../models", f"model_{timestamp}.pth")
-    os.makedirs(os.path.dirname(model_save_path), exist_ok=True)
-    torch.save(model.state_dict(), model_save_path)
-    print(f"Model saved to {model_save_path}")
-
-    # generate evaluation plots and sample predictions
-    print("\nRunning visualization...")
-    visualize(model, history, y_mean, y_std, test_loader, test_raw)
-    print("Visualization complete!")
-
-    return model, history, y_mean, y_std, test_loader, test_raw
+        return self.model, history, y_mean, y_std, test_loader, test_raw
 
 
 if __name__ == "__main__":
-    train()
+    trainer = Food101ResNet50()
+    trainer.train()
