@@ -27,7 +27,6 @@ dependencies = [
   "typer==0.15.2",
   "fastapi==0.115.12",
   "uvicorn==0.34.2",
-  "coverage>=7.8.0",
 ]
 optional-dependencies = {dev = [
   "invoke==2.2.0",
@@ -48,3 +47,9 @@ select = ["I", "N", "E", "W", ]
 
 [tool.coverage.run]
 omit = ["tests/*"]
+
+[dependency-groups]
+dev = [
+    "coverage>=7.8.0",
+    "pytest>=8.3.4",
+]
