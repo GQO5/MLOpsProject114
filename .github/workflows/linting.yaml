@@ -24,7 +24,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --dev --locked
+          uv sync --extra dev 
 
       - name: ruff check
         run: |
