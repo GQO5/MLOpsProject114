@@ -34,8 +34,9 @@ RUN uv sync --locked --no-dev --no-install-project
 # ==========================================
 # 5. Application Code
 # ==========================================
-# Copy the source code and the README
+# Copy the source code, data and the README
 COPY src/ ./src/
+COPY data/ ./data/
 COPY README.md ./
 
 # Install the project itself (so imports like 'import mlopsproject' work)
