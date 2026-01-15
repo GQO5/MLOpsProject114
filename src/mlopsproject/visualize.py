@@ -42,7 +42,9 @@ def visualize(model, history, y_mean, y_std, test_loader, test_raw):
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # evaluate on test set
-    test_mse, test_mae_per, test_r2_per, y_true_test, y_pred_test = evaluate(model, test_loader, y_mean, y_std)
+    test_mse, test_mae_per, test_r2_per, y_true_test, y_pred_test = evaluate(
+        model, test_loader, y_mean, y_std
+    )
     print("\nTEST metrics:")
     print(f"  MSE (standardized): {test_mse:.4f}")
     for name, mae, r2 in zip(TARGET_COLS, test_mae_per, test_r2_per):
@@ -128,10 +130,20 @@ def visualize(model, history, y_mean, y_std, test_loader, test_raw):
 
     idxs = random.sample(range(len(test_raw)), 5)
     for i, idx in enumerate(idxs):
-        row = test_raw[idx]  # raw has 'image' + target cols
-        img = row["image"]
-        gt = np.array([float(row[c]) for c in TARGET_COLS], dtype=np.float32)
-        pred = predict_one(img)
+        # Fix: Access raw data directly from the internal dataframe
+        # test_raw[idx] returns normalized tensors, but we want the raw PIL image for plotting.
+        row = test_raw.df.iloc[idx]
+
+        # 1. Load Raw Image
+        image_path = row["image_path"]
+        img = Image.open(image_path).convert("RGB")
+
+        # 2. Get Ground Truth
+        target_cols = ["total_calories", "total_protein", "total_carb", "total_fat"]
+        gt = row[target_cols].values.astype(float)
+
+        # 3. Predict (predict_one handles the transformation)
+        pred = predict_one(model, img)
 
         plt.figure(figsize=(10, 8))
         plt.imshow(img)
@@ -158,7 +170,9 @@ def visualize(model, history, y_mean, y_std, test_loader, test_raw):
         random_filename = f"random_sample_{i + 1}_{timestamp}.png"
         plt.savefig(os.path.join(random_dir, random_filename), bbox_inches="tight")
         plt.close()
-        print(f"Random sample {i + 1} saved to reports/figures/Random/{random_filename}")
+        print(
+            f"Random sample {i + 1} saved to reports/figures/Random/{random_filename}"
+        )
 
 
 if __name__ == "__main__":
