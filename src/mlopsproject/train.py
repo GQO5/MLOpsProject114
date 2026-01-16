@@ -149,10 +149,36 @@ class Food101ResNet50:
         torch.save(self.model.state_dict(), model_save_path)
         print(f"Model saved to {model_save_path}")
 
+        # log model artifact to W&B
+        model_artifact = wandb.Artifact(
+        name=f"model-{wandb.run.id}",
+        type="model",
+        description="Trained Food101 ResNet50 model",
+        )
+
+        model_artifact.add_file(model_save_path)
+        wandb.log_artifact(model_artifact)
+
+        print("Model artifact logged to W&B")
+
+
         # generate evaluation plots and sample predictions
         print("\nRunning visualization...")
         visualize(self.model, history, y_mean, y_std, test_loader, test_raw)
         print("Visualization complete!")
+
+        # log figures artifact to W&B
+        figures_dir = "reports/figures"
+
+        figures_artifact = wandb.Artifact(
+            name=f"figures-{wandb.run.id}",
+            type="figures",
+            description="Training curves, scatter plots, and sample predictions",
+        )
+
+        figures_artifact.add_dir(figures_dir)
+        wandb.log_artifact(figures_artifact)
+        print("Figures artifact logged to W&B")
 
         return self.model, history, y_mean, y_std, test_loader, test_raw
 
