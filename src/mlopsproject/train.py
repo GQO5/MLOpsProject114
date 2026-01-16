@@ -91,7 +91,9 @@ class Food101ResNet50:
                 scaler.update()
             self.scheduler.step()
             train_mse, _, _, _, _ = evaluate(self.model, train_loader, y_mean, y_std)
-            val_mse, val_mae_per, val_r2_per, _, _ = evaluate(self.model, val_loader, y_mean, y_std)
+            val_mse, val_mae_per, val_r2_per, _, _ = evaluate(
+                self.model, val_loader, y_mean, y_std
+            )
 
             # log metrics to wandb
 
@@ -119,8 +121,18 @@ class Food101ResNet50:
             history["val_mae_per"].append(val_mae_per)
             history["val_r2_per"].append(val_r2_per)
 
-            mae_str = " | ".join([f"{n.split('total_')[-1]}:{v:.1f}" for n, v in zip(target_cols, val_mae_per)])
-            r2_str = " | ".join([f"{n.split('total_')[-1]}:{v:.3f}" for n, v in zip(target_cols, val_r2_per)])
+            mae_str = " | ".join(
+                [
+                    f"{n.split('total_')[-1]}:{v:.1f}"
+                    for n, v in zip(target_cols, val_mae_per)
+                ]
+            )
+            r2_str = " | ".join(
+                [
+                    f"{n.split('total_')[-1]}:{v:.3f}"
+                    for n, v in zip(target_cols, val_r2_per)
+                ]
+            )
             print(f"epoch={epoch} trainMSE={train_mse:.4f} valMSE={val_mse:.4f}")
             print("      val MAE:", mae_str)
             print("      val R2 :", r2_str)
