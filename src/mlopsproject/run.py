@@ -3,9 +3,9 @@ import random
 import hydra
 import numpy as np
 import torch
-import wandb 
 from omegaconf import OmegaConf
 
+import wandb
 from mlopsproject.data import load_data
 from mlopsproject.model import load_model
 
@@ -24,13 +24,12 @@ def main(cfg):
     print("Configuration Loaded:")
     print(OmegaConf.to_yaml(cfg))
 
-
     # Initialize Weights & Biases
     cfg_dict = OmegaConf.to_container(cfg, resolve=True)
     wandb.init(
-    project="MLOpsProject114",
-    config=cfg_dict,
-)
+        project="MLOpsProject114",
+        config=cfg_dict,
+    )
 
     # Set random seed for reproducibility if specified
     if cfg.seed_run:
@@ -38,7 +37,9 @@ def main(cfg):
 
     # Set device
     if cfg.device in ["unset", "auto"]:
-        device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
+        device = torch.device(
+            "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
+        )
     else:
         device = torch.device(cfg.device)
 
@@ -50,9 +51,7 @@ def main(cfg):
     print("Model Loaded")
 
     trainer = hydra.utils.instantiate(cfg.trainer.init, model=model, device=device)
-    model_trained, history, y_mean, y_std, test_loader, test_raw = trainer.train(
-        **cfg.trainer.train
-    )
+    model_trained, history, y_mean, y_std, test_loader, test_raw = trainer.train(**cfg.trainer.train)
 
     wandb.finish()
 

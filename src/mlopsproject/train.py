@@ -1,11 +1,11 @@
 import datetime
 import os
-import wandb
-
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
+
+import wandb
 
 try:
     from tqdm.auto import tqdm
@@ -91,10 +91,8 @@ class Food101ResNet50:
                 scaler.update()
             self.scheduler.step()
             train_mse, _, _, _, _ = evaluate(self.model, train_loader, y_mean, y_std)
-            val_mse, val_mae_per, val_r2_per, _, _ = evaluate(
-                self.model, val_loader, y_mean, y_std
-            )
-            
+            val_mse, val_mae_per, val_r2_per, _, _ = evaluate(self.model, val_loader, y_mean, y_std)
+
             # log metrics to wandb
 
             phase = "ft" if self.finetune else "head"
@@ -115,25 +113,14 @@ class Food101ResNet50:
 
             wandb.log(metrics, step=epoch)
 
-
             history["epoch"].append(epoch)
             history["train_mse"].append(train_mse)
             history["val_mse"].append(val_mse)
             history["val_mae_per"].append(val_mae_per)
             history["val_r2_per"].append(val_r2_per)
 
-            mae_str = " | ".join(
-                [
-                    f"{n.split('total_')[-1]}:{v:.1f}"
-                    for n, v in zip(target_cols, val_mae_per)
-                ]
-            )
-            r2_str = " | ".join(
-                [
-                    f"{n.split('total_')[-1]}:{v:.3f}"
-                    for n, v in zip(target_cols, val_r2_per)
-                ]
-            )
+            mae_str = " | ".join([f"{n.split('total_')[-1]}:{v:.1f}" for n, v in zip(target_cols, val_mae_per)])
+            r2_str = " | ".join([f"{n.split('total_')[-1]}:{v:.3f}" for n, v in zip(target_cols, val_r2_per)])
             print(f"epoch={epoch} trainMSE={train_mse:.4f} valMSE={val_mse:.4f}")
             print("      val MAE:", mae_str)
             print("      val R2 :", r2_str)
@@ -151,16 +138,15 @@ class Food101ResNet50:
 
         # log model artifact to W&B
         model_artifact = wandb.Artifact(
-        name=f"model-{wandb.run.id}",
-        type="model",
-        description="Trained Food101 ResNet50 model",
+            name=f"model-{wandb.run.id}",
+            type="model",
+            description="Trained Food101 ResNet50 model",
         )
 
         model_artifact.add_file(model_save_path)
         wandb.log_artifact(model_artifact)
 
         print("Model artifact logged to W&B")
-
 
         # generate evaluation plots and sample predictions
         print("\nRunning visualization...")
