@@ -25,7 +25,7 @@ def main(cfg):
 
     # Set random seed for reproducibility if specified
     if cfg.seed_run:
-        seed_everything(cfg.seed_run)
+        seed_everything(cfg.seed)
 
     # Set device
     if cfg.device in ["unset", "auto"]:
