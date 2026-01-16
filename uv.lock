@@ -1081,6 +1081,12 @@ dev = [
     { name = "ruff" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "coverage" },
+    { name = "pytest" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "coverage", marker = "extra == 'dev'", specifier = "==7.8.0" },
@@ -1102,6 +1108,12 @@ requires-dist = [
     { name = "uvicorn", specifier = "==0.34.2" },
 ]
 provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "coverage", specifier = ">=7.8.0" },
+    { name = "pytest", specifier = ">=8.3.4" },
+]
 
 [[package]]
 name = "mpmath"
