@@ -13,7 +13,7 @@ from torchvision import transforms
 
 from mlopsproject.evaluate import evaluate
 
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+DEVICE = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 TARGET_COLS = ["total_calories", "total_fat", "total_carb", "total_protein"]
 
 # image preprocessing for resnet
