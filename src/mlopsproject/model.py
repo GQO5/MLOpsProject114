@@ -1,11 +1,10 @@
 import os
 
+import hydra
 import torch
 import torch.nn as nn
-from torchvision import models
-
-import hydra
 from omegaconf import DictConfig
+from torchvision import models
 
 # data paths and configuration
 DATA_ROOT = os.path.join(os.path.dirname(__file__), "../../data/food-nutrients")
