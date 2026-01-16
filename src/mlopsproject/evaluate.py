@@ -2,7 +2,11 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+DEVICE = (
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps" if torch.backends.mps.is_available() else "cpu"
+)
 
 
 def unscale(y_scaled, y_mean, y_std):

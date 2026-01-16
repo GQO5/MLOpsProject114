@@ -1,5 +1,11 @@
 docs/site/
 
+# W&B runs
+wandb/
+
+# Generated figures
+reports/figures/
+
 # test cache
 manual_test/
 

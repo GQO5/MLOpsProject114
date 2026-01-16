@@ -11,7 +11,11 @@ DATA_ROOT = os.path.join(os.path.dirname(__file__), "../../data/food-nutrients")
 MODEL_PATH = os.path.join(DATA_ROOT, "food101_model.pth")
 TARGET_COLS = ["total_calories", "total_fat", "total_carb", "total_protein"]
 
-DEVICE = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
+DEVICE = (
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps" if torch.backends.mps.is_available() else "cpu"
+)
 
 
 def load_model(cfg: DictConfig) -> nn.Module:
