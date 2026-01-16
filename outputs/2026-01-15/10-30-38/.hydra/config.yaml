@@ -1,0 +1,6 @@
+seed_run: true
+seed: 42
+device: unset
+debug_mode: false
+models_dir: ./models/
+figures_dir: ./figures/
