@@ -1,7 +1,9 @@
 import os
 
+import hydra
 import torch
 import torch.nn as nn
+from omegaconf import DictConfig
 from torchvision import models
 
 # data paths and configuration
@@ -12,7 +14,7 @@ TARGET_COLS = ["total_calories", "total_fat", "total_carb", "total_protein"]
 DEVICE = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 
 
-def load_model():
+def load_model(cfg: DictConfig) -> nn.Module:
     # 1 load pretrained resnet50 with food101 weights
     # 2 replace classification head with regression head
     # 3 move to appropriate device

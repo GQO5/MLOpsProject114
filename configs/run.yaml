@@ -1,0 +1,13 @@
+defaults:
+  # - dataset: 
+  - trainer: trainResNet50   
+  # - logger: 
+  # - model: 
+  - _self_
+
+seed_run: True # Whether to seed the run
+seed: 42 # Random seed
+device: unset # Device to use (cuda or cpu) if unset will use cuda if available
+debug_mode: False # Debug mode
+models_dir: ./models/ # Directory to save models
+figures_dir: ./figures/ # Directory to save figures

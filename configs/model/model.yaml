@@ -1,0 +1,8 @@
+defaults:
+  - _self_
+
+name: ResNet50
+
+init:
+  _target_: model.ResNet50
+  _partial_: false
