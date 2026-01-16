@@ -6,6 +6,7 @@ WINDOWS = os.name == "nt"
 PROJECT_NAME = "mlopsproject"
 PYTHON_VERSION = "3.12"
 
+
 # Setup commands
 @task
 def create_environment(ctx: Context) -> None:
@@ -15,6 +16,7 @@ def create_environment(ctx: Context) -> None:
         echo=True,
         pty=not WINDOWS,
     )
+
 
 @task
 def requirements(ctx: Context) -> None:
@@ -29,17 +31,22 @@ def dev_requirements(ctx: Context) -> None:
     """Install development requirements."""
     ctx.run('pip install -e .["dev"]', echo=True, pty=not WINDOWS)
 
+
 # Project commands
 @task
 def preprocess_data(ctx: Context) -> None:
     """Preprocess data."""
     ctx.run(f"python src/{PROJECT_NAME}/data.py", echo=True, pty=not WINDOWS)
 
+
 @task
-def train(ctx: Context) -> None:
-    """Train model."""
-    ctx.run(f"python -c \"from {PROJECT_NAME}.model import load_model; load_model()\"", echo=True, pty=not WINDOWS)
-    ctx.run(f"python src/{PROJECT_NAME}/train.py", echo=True, pty=not WINDOWS)
+def train(ctx: Context, overrides="") -> None:
+    """
+    Train model with optional override of arguments using hydra.
+    Example overrides: 'trainer.train.total_epochs=100 trainer.init.optimizer.lr=0.05
+    """
+    ctx.run(f"uv run src/{PROJECT_NAME}/run.py {overrides}", echo=True, pty=not WINDOWS)
+
 
 @task
 def test(ctx: Context) -> None:
@@ -47,25 +54,31 @@ def test(ctx: Context) -> None:
     ctx.run("coverage run -m pytest tests/", echo=True, pty=not WINDOWS)
     ctx.run("coverage report -m -i", echo=True, pty=not WINDOWS)
 
+
 @task
 def docker_build(ctx: Context, progress: str = "plain") -> None:
     """Build docker images."""
     ctx.run(
         f"docker build -t train:latest . -f dockerfiles/train.dockerfile --progress={progress}",
         echo=True,
-        pty=not WINDOWS
+        pty=not WINDOWS,
     )
     ctx.run(
         f"docker build -t api:latest . -f dockerfiles/api.dockerfile --progress={progress}",
         echo=True,
-        pty=not WINDOWS
+        pty=not WINDOWS,
     )
+
 
 # Documentation commands
 @task(dev_requirements)
 def build_docs(ctx: Context) -> None:
     """Build documentation."""
-    ctx.run("mkdocs build --config-file docs/mkdocs.yaml --site-dir build", echo=True, pty=not WINDOWS)
+    ctx.run(
+        "mkdocs build --config-file docs/mkdocs.yaml --site-dir build",
+        echo=True,
+        pty=not WINDOWS,
+    )
 
 
 @task(dev_requirements)

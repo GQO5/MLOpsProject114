@@ -75,7 +75,7 @@ class Food101ResNet50:
 
         for epoch in range(1, total_epochs + 1):
             self.model.train()
-            for x, y in tqdm(train_loader, desc=f"[Head] Epoch {epoch}/{total_epochs}"):
+            for x, y in tqdm(train_loader, desc=f"Epoch {epoch}/{total_epochs}"):
                 x = x.to(DEVICE, non_blocking=True)
                 y = y.to(DEVICE, non_blocking=True)
 
@@ -87,7 +87,7 @@ class Food101ResNet50:
                 scaler.scale(loss).backward()
                 scaler.step(self.optimizer)
                 scaler.update()
-
+            self.scheduler.step()
             train_mse, _, _, _, _ = evaluate(self.model, train_loader, y_mean, y_std)
             val_mse, val_mae_per, val_r2_per, _, _ = evaluate(
                 self.model, val_loader, y_mean, y_std
@@ -111,7 +111,7 @@ class Food101ResNet50:
                     for n, v in zip(target_cols, val_r2_per)
                 ]
             )
-            print(f"[Head] epoch={epoch} trainMSE={train_mse:.4f} valMSE={val_mse:.4f}")
+            print(f"epoch={epoch} trainMSE={train_mse:.4f} valMSE={val_mse:.4f}")
             print("      val MAE:", mae_str)
             print("      val R2 :", r2_str)
 

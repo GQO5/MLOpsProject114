@@ -121,8 +121,12 @@ uv run invoke preprocess-data
 
 #### Train the Model
 ```bash
-# Train the nutrition estimation model
+# Train the nutrition estimation model with default config
 uv run invoke train
+```
+```
+# Train the nutrition estimation model overriding config values
+uv run invoke train --overrides= "trainer.train.total_epochs=50 trainer.init.optimizer.lr=0.001"
 ```
 This will:
 - Load the pretrained Food101 model
