@@ -1,5 +1,7 @@
 import datetime
 import os
+import wandb
+
 
 import torch
 import torch.nn as nn
@@ -92,6 +94,27 @@ class Food101ResNet50:
             val_mse, val_mae_per, val_r2_per, _, _ = evaluate(
                 self.model, val_loader, y_mean, y_std
             )
+            
+            # log metrics to wandb
+
+            phase = "ft" if self.finetune else "head"
+
+            metrics = {
+                "epoch": epoch,
+                "phase": phase,
+                "train/mse": float(train_mse),
+                "val/mse": float(val_mse),
+                "lr": float(self.optimizer.param_groups[0]["lr"]),
+            }
+
+            for name, mae in zip(target_cols, val_mae_per):
+                metrics[f"val/mae_{name}"] = float(mae)
+
+            for name, r2 in zip(target_cols, val_r2_per):
+                metrics[f"val/r2_{name}"] = float(r2)
+
+            wandb.log(metrics, step=epoch)
+
 
             history["epoch"].append(epoch)
             history["train_mse"].append(train_mse)
