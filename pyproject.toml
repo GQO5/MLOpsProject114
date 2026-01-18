@@ -59,25 +59,18 @@ conflicts = [
   ],
 ]
 
-# 1. Standart Python Deposunu (PyPI) ismen tanıtıyoruz
 [[tool.uv.index]]
 name = "pypi"
 url = "https://pypi.org/simple"
 default = true
 
-# 2. Linux için özel CPU deposunu tanıtıyoruz
 [[tool.uv.index]]
 name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
 explicit = true
 
-# 3. Şimdi seçim yapıyoruz
 [tool.uv.sources]
 torch = [
-    { index = "pytorch-cpu", marker = "sys_platform == 'linux'" },
-    { index = "pypi", marker = "sys_platform != 'linux'" },
-]
-torchvision = [
     { index = "pytorch-cpu", marker = "sys_platform == 'linux'" },
     { index = "pypi", marker = "sys_platform != 'linux'" },
 ]
