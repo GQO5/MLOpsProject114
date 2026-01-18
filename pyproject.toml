@@ -84,6 +84,7 @@ line-length = 120
 
 [tool.ruff.lint]
 select = ["I", "N", "E", "W", ]
+ignore = ["I001"]
 
 [tool.coverage.run]
 omit = [
