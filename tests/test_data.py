@@ -3,8 +3,11 @@ import os
 import pytest
 import torch
 
-
-from mlopsproject.data import load_data
+try:
+    import torch
+    from mlopsproject.data import load_data
+except (ImportError, OSError):
+    pytest.skip("Torch or CUDA are skipped", allow_module_level=True)
 
 
 # 1. Define the path relative to where you run pytest (usually project root)

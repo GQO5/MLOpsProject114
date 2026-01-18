@@ -59,33 +59,31 @@ conflicts = [
   ],
 ]
 
-[[tool.uv.index]]
-name = "pypi"
-url = "https://pypi.org/simple"
-default = true
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu128", extra = "cu128" },
+]
+torchvision = [
+  { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu128", extra = "cu128" },
+]
 
 [[tool.uv.index]]
 name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
 explicit = true
 
-[tool.uv.sources]
-torch = [
-    { index = "pytorch-cpu", marker = "sys_platform == 'linux'" },
-    { index = "pypi", marker = "sys_platform != 'linux'" },
-]
-torchvision = [
-    { index = "pytorch-cpu", marker = "sys_platform == 'linux'" },
-    { index = "pypi", marker = "sys_platform != 'linux'" },
-]
-
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
 
 [tool.ruff]
 line-length = 120
 
 [tool.ruff.lint]
 select = ["I", "N", "E", "W", ]
-ignore = ["I001", "N812"]
 
 [tool.coverage.run]
 omit = [
@@ -98,5 +96,4 @@ dev = [
     "coverage>=7.8.0",
     "pytest>=8.3.4",
     "pytest-cov>=6.3.0",
-    "ruff>=0.11.6",
 ]
