@@ -3,7 +3,7 @@ import os
 import pytest
 import torch
 
-from src.mlopsproject.data import load_data
+from mlopsproject.data import load_data
 
 # 1. Define the path relative to where you run pytest (usually project root)
 DATA_PATH = "data/food-nutrients/metadata.jsonl"
