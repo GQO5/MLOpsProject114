@@ -17,17 +17,16 @@ def get_backend_url():
         client = run_v2.ServicesClient()
         services = client.list_services(parent=parent)
         for service in services:
-            if service.name.split("/")[-1] == "production-model":
+            if service.name.split("/")[-1] == "backend":
                 return service.uri
 
 def classify_image(image, backend) -> dict:
     """Send the image to the backend for classification."""
-    predict_url = f"{backend}/predict/"
+    predict_url = f"{backend}/predict"
     # print(f"Sending request to backend at {predict_url}")
     response = requests.post(
         predict_url, files={"image": image}, timeout=10
     )  # "file" must match with backend endpoint argument
-    print(f"Response: {response.json()}")
     if response.status_code == 200:
         return response.json()
     return None
