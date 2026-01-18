@@ -70,6 +70,46 @@ def docker_build(ctx: Context, progress: str = "plain") -> None:
     )
 
 
+@task
+def build_frontend_docker(ctx: Context, progress: str = "plain") -> None:
+    """Build frontend docker image."""
+    ctx.run(
+        f"docker build -t frontend:latest . -f dockerfiles/frontend.dockerfile --progress={progress}",
+        echo=True,
+        pty=not WINDOWS,
+    )
+
+
+@task
+def build_backend_docker(ctx: Context, progress: str = "plain") -> None:
+    """Build backend docker image."""
+    ctx.run(
+        f"docker build -t backend:latest . -f dockerfiles/backend.dockerfile --progress={progress}",
+        echo=True,
+        pty=not WINDOWS,
+    )
+
+
+@task
+def run_frontend_docker(ctx: Context, port: int = 8503) -> None:
+    """Run frontend docker container."""
+    ctx.run(
+        f"docker run --rm -e PORT={port} -p {port}:{port} frontend:latest",
+        echo=True,
+        pty=not WINDOWS,
+    )
+
+
+@task
+def run_backend_docker(ctx: Context, port: int = 8000) -> None:
+    """Run backend docker container."""
+    ctx.run(
+        f"docker run --rm -e PORT={port} -p {port}:{port} backend:latest",
+        echo=True,
+        pty=not WINDOWS,
+    )
+
+
 # Documentation commands
 @task(dev_requirements)
 def build_docs(ctx: Context) -> None:
