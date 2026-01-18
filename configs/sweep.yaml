@@ -1,0 +1,26 @@
+program: main.py
+name: SweepTrainFood101Model
+project: MLOpsProject114
+entity: s253814-danmarks-tekniske-universitet-dtu
+metric:
+  goal: minimize
+  name: val/mse # Must match the name of the logged parameter in main.py
+method: bayes
+parameters:
+  trainer.train.total_epochs:
+    values: [10]
+  trainer.init.optimizer.lr:
+    distribution: log_uniform_values
+    min: 5e-4
+    max: 1e-2
+  trainer.init.optimizer.weight_decay:
+    values: [0.0, 0.001, 0.005]
+  trainer.init.scheduler.gamma:
+    values: [0.95, 0.975, 0.99]
+
+command:
+  - ${env}
+  - uv
+  - run
+  - src/mlopsproject/run.py
+  - ${args_no_hyphens}
