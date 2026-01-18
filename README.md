@@ -124,7 +124,7 @@ uv run invoke preprocess-data
 # Train the nutrition estimation model with default config
 uv run invoke train
 ```
-```
+```bash
 # Train the nutrition estimation model overriding config values
 uv run invoke train --overrides= "trainer.train.total_epochs=50 trainer.init.optimizer.lr=0.001"
 ```
