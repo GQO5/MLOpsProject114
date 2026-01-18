@@ -13,7 +13,7 @@ import pandas as pd
 import torch
 from PIL import Image
 from torch.utils.data import DataLoader, Dataset
-from torchvision import transforms as T
+from torchvision import transforms as T  # noqa: N812
 
 
 @dataclass(frozen=True)

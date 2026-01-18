@@ -4,7 +4,8 @@ It provides the 'load_data' function that train.py expects.
 """
 
 import torch
-from mlopsproject.dataset import DatasetConfig, make_dataloader, FoodNutrientsDataset
+
+from mlopsproject.dataset import DatasetConfig, FoodNutrientsDataset, make_dataloader
 
 
 def load_data():
