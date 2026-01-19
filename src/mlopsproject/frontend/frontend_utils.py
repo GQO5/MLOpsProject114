@@ -29,24 +29,20 @@ NUTRIENT_CARD_CSS = """
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
     @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
-    
     * {
         font-family: 'Manrope', sans-serif;
     }
-    
     .nutrient-container {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 14px;
         margin-top: 24px;
     }
-    
     @media (max-width: 640px) {
         .nutrient-container {
             grid-template-columns: repeat(2, 1fr);
         }
     }
-    
     .nutrient-card {
         background: #ffffff;
         border-radius: 12px;
@@ -61,11 +57,9 @@ NUTRIENT_CARD_CSS = """
         overflow: hidden;
         transition: transform 0.3s ease;
     }
-    
     .nutrient-card:hover {
         transform: translateY(-2px);
     }
-    
     .nutrient-card-bg {
         position: absolute;
         right: -16px;
@@ -75,11 +69,9 @@ NUTRIENT_CARD_CSS = """
         border-radius: 50%;
         transition: transform 0.3s ease;
     }
-    
     .nutrient-card:hover .nutrient-card-bg {
         transform: scale(1.25);
     }
-    
     .nutrient-icon {
         padding: 8px;
         border-radius: 8px;
@@ -87,11 +79,9 @@ NUTRIENT_CARD_CSS = """
         z-index: 10;
         position: relative;
     }
-    
     .material-symbols-outlined {
         font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
-    
     .nutrient-label {
         color: #6d7d7e;
         font-size: 12px;
@@ -101,7 +91,6 @@ NUTRIENT_CARD_CSS = """
         z-index: 10;
         position: relative;
     }
-    
     .nutrient-value {
         color: #131616;
         font-size: 32px;
@@ -111,14 +100,12 @@ NUTRIENT_CARD_CSS = """
         z-index: 10;
         position: relative;
     }
-    
     .nutrient-unit {
         font-size: 18px;
         font-weight: 700;
         color: #6d7d7e;
         vertical-align: top;
     }
-    
     .nutrient-sublabel {
         font-size: 12px;
         color: #6d7d7e;
@@ -138,7 +125,6 @@ def get_header_html():
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
             @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
-            
             /* Header styling */
             .custom-header {
                 position: sticky;
@@ -150,7 +136,6 @@ def get_header_html():
                 padding: 16px 0;
                 margin-bottom: 2px;
             }
-            
             .header-content {
                 max-width: 1200px;
                 margin: 0 auto;
@@ -159,13 +144,11 @@ def get_header_html():
                 align-items: center;
                 justify-content: space-between;
             }
-            
             .logo-section {
                 display: flex;
                 align-items: center;
                 gap: 12px;
             }
-            
             .logo-icon {
                 width: 32px;
                 height: 32px;
@@ -176,7 +159,6 @@ def get_header_html():
                 justify-content: center;
                 color: #305d5f;
             }
-            
             .logo-text {
                 font-size: 20px;
                 font-weight: 700;
@@ -184,13 +166,11 @@ def get_header_html():
                 font-family: 'Manrope', sans-serif;
                 letter-spacing: -0.02em;
             }
-            
             .header-actions {
                 display: flex;
                 align-items: center;
                 gap: 12px;
             }
-            
             .settings-btn {
                 width: 36px;
                 height: 36px;
@@ -204,11 +184,9 @@ def get_header_html():
                 color: #6d7d7e;
                 transition: background 0.2s;
             }
-            
             .settings-btn:hover {
                 background: rgba(0, 0, 0, 0.05);
             }
-            
             .user-avatar {
                 width: 32px;
                 height: 32px;
@@ -223,32 +201,27 @@ def get_header_html():
                 font-family: 'Manrope', sans-serif;
                 box-shadow: 0 2px 8px rgba(48, 93, 95, 0.2);
             }
-            
             .material-symbols-outlined {
                 font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
             }
-            
             /* Center content with max width */
             .main-content {
                 max-width: 1200px;
                 margin: 0 auto;
                 padding: 0 24px;
             }
-            
             /* Remove default Streamlit padding */
             .block-container {
                 padding-top: 2rem;
                 padding-bottom: 2rem;
                 max-width: 1200px;
             }
-            
             /* Center image vertically */
             [data-testid="column"]:first-child {
                 display: flex;
                 align-items: center;
                 justify-content: center;
             }
-            
             [data-testid="stImage"] {
                 display: flex;
                 align-items: center;
@@ -293,7 +266,6 @@ def get_nutrient_card_html(total_calories, total_fat, total_carbs, total_protein
                 <p class="nutrient-value">{int(total_calories)}<span class="nutrient-unit">kcal</span></p>
             </div>
         </div>
-        
         <!-- Protein Card -->
         <div class="nutrient-card">
             <div class="nutrient-card-bg" style="background-color: rgba(48, 93, 95, 0.1);"></div>
@@ -305,7 +277,6 @@ def get_nutrient_card_html(total_calories, total_fat, total_carbs, total_protein
                 <p class="nutrient-value">{total_protein:.2f}<span class="nutrient-unit">g</span></p>
             </div>
         </div>
-        
         <!-- Carbs Card -->
         <div class="nutrient-card">
             <div class="nutrient-card-bg" style="background-color: rgba(234, 179, 8, 0.1);"></div>
@@ -317,7 +288,6 @@ def get_nutrient_card_html(total_calories, total_fat, total_carbs, total_protein
                 <p class="nutrient-value">{total_carbs:.2f}<span class="nutrient-unit">g</span></p>
             </div>
         </div>
-        
         <!-- Fat Card -->
         <div class="nutrient-card">
             <div class="nutrient-card-bg" style="background-color: rgba(59, 130, 246, 0.1);"></div>

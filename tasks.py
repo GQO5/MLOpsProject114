@@ -135,7 +135,8 @@ def load_test_frontend(
         uv run invoke load-test-frontend --host=http://localhost:8503 --users=50 --spawn-rate=5 --run-time=10
     """
     ctx.run(
-        f"locust -f tests/performancetests/locustfile_frontend.py --headless --users {users} --spawn-rate {spawn_rate} --host {host} --run-time {run_time}m",
+        f"locust -f tests/performancetests/locustfile_frontend.py --headless --users {users} --spawn-rate {spawn_rate} \
+        --host {host} --run-time {run_time}m",
         echo=True,
         pty=not WINDOWS,
     )
@@ -166,7 +167,8 @@ def load_test_backend(
         uv run invoke load-test-backend --host=http://localhost:8000 --users=50 --spawn-rate=5 --run-time=10
     """
     ctx.run(
-        f"locust -f tests/performancetests/locustfile_backend.py --headless --users {users} --spawn-rate {spawn_rate} --host {host} --run-time {run_time}m",
+        f"locust -f tests/performancetests/locustfile_backend.py --headless --users {users} --spawn-rate {spawn_rate} \
+        --host {host} --run-time {run_time}m",
         echo=True,
         pty=not WINDOWS,
     )

@@ -79,12 +79,6 @@ def main() -> None:
             st.markdown("### Nutrition Summary")
             st.caption("Based on standard serving sizes")
 
-            # Example nutrition data (replace with actual API call)
-            calories = 540
-            protein = 28
-            carbs = 62
-            fat = 18
-
             # Render the nutrient cards using st.html()
             st.html(
                 get_nutrient_card_html(
