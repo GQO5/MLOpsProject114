@@ -1,0 +1,17 @@
+[theme]
+# NutriScan AI Theme Colors (Extracted from actual code)
+
+# Primary color - exact teal from the design
+primaryColor = "#305d5f"
+
+# Background color - exact light background
+backgroundColor = "#f9fbfb"
+
+# Secondary background - white for cards
+secondaryBackgroundColor = "#ffffff"
+
+# Text color - exact dark text
+textColor = "#131616"
+
+# Font
+font = "sans serif"
