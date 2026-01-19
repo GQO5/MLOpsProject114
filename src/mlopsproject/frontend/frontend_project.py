@@ -20,6 +20,7 @@ def get_backend_url():
             if service.name.split("/")[-1] == "backend":
                 return service.uri
 
+
 def classify_image(image, backend) -> dict:
     """Send the image to the backend for classification."""
     predict_url = f"{backend}/predict"

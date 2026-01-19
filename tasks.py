@@ -110,6 +110,68 @@ def run_backend_docker(ctx: Context, port: int = 8000) -> None:
     )
 
 
+@task
+def load_test_frontend(
+    ctx: Context,
+    host: str = "https://frontend-582302018737.europe-west1.run.app",
+    users: int = 10,
+    spawn_rate: int = 1,
+    run_time: int = 1,
+) -> None:
+    """
+    Run frontend load tests using Locust.
+
+    This task executes Locust in headless mode to simulate user load on the frontend service.
+    You can customize the target host, number of simulated users, user spawn rate, and test duration.
+
+    Args:
+        ctx (Context): Invoke context.
+        host (str, optional): The base URL of the frontend to test. Defaults to the deployed frontend URL.
+        users (int, optional): Number of concurrent users to simulate. Defaults to 10.
+        spawn_rate (int, optional): Rate at which users are spawned (users per second). Defaults to 1.
+        run_time (int, optional): Duration of the test in minutes. Defaults to 1.
+
+    Example:
+        uv run invoke load-test-frontend --host=http://localhost:8503 --users=50 --spawn-rate=5 --run-time=10
+    """
+    ctx.run(
+        f"locust -f tests/performancetests/locustfile_frontend.py --headless --users {users} --spawn-rate {spawn_rate} --host {host} --run-time {run_time}m",
+        echo=True,
+        pty=not WINDOWS,
+    )
+
+
+@task
+def load_test_backend(
+    ctx: Context,
+    host: str = "https://backend-582302018737.europe-west1.run.app",
+    users: int = 10,
+    spawn_rate: int = 1,
+    run_time: int = 1,
+) -> None:
+    """
+    Run backend load tests using Locust.
+
+    This task executes Locust in headless mode to simulate user load on the backend service.
+    You can customize the target host, number of simulated users, user spawn rate, and test duration.
+
+    Args:
+        ctx (Context): Invoke context.
+        host (str, optional): The base URL of the backend to test. Defaults to the deployed backend URL.
+        users (int, optional): Number of concurrent users to simulate. Defaults to 10.
+        spawn_rate (int, optional): Rate at which users are spawned (users per second). Defaults to 1.
+        run_time (int, optional): Duration of the test in minutes. Defaults to 1.
+
+    Example:
+        uv run invoke load-test-backend --host=http://localhost:8000 --users=50 --spawn-rate=5 --run-time=10
+    """
+    ctx.run(
+        f"locust -f tests/performancetests/locustfile_backend.py --headless --users {users} --spawn-rate {spawn_rate} --host {host} --run-time {run_time}m",
+        echo=True,
+        pty=not WINDOWS,
+    )
+
+
 # Documentation commands
 @task(dev_requirements)
 def build_docs(ctx: Context) -> None:
