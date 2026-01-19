@@ -18,6 +18,7 @@ classifiers = [
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+  "invoke==2.2.0",
   "torch>=2.9.1",
   "torchvision>=0.24.1",
   "datasets==3.2.0",
@@ -33,10 +34,14 @@ dependencies = [
   "bentoml>=1.4.19",
   "google-cloud-run>=0.14.0",
   "locust>=2.43.1",
+  "dvc>=3.66.1",
+  "dvc-gs>=3.0.2",
+  "mypy[dev]>=1.19.1",
+
 ]
 [project.optional-dependencies]
 dev = [
-  "invoke==2.2.0",
+
   "pre-commit==4.1.0",
   "pytest==8.3.4",
   "coverage==7.8.0",
@@ -88,6 +93,7 @@ line-length = 120
 
 [tool.ruff.lint]
 select = ["I", "N", "E", "W", ]
+ignore = ["I001"]
 
 [tool.coverage.run]
 omit = [
@@ -98,6 +104,7 @@ omit = [
 [dependency-groups]
 dev = [
     "coverage>=7.8.0",
+    "pre-commit>=4.1.0",
     "pytest>=8.3.4",
     "pytest-cov>=6.3.0",
 ]

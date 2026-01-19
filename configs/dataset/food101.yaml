@@ -1,6 +1,6 @@
 dataset_name: "food101"
 
-num_outputs: 1 
+num_outputs: 1
 
 init:
   _target_: data.Food101DataModule

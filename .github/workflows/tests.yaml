@@ -24,10 +24,11 @@ jobs:
         uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
+          enable-cache: true
 
       - name: Install dependencies
         run: |
-          uv sync --extra dev 
+          uv sync --extra dev
 
 
       - name: Run tests & coverage

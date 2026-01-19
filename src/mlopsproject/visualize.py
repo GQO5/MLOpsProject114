@@ -13,11 +13,7 @@ from torchvision import transforms
 
 from mlopsproject.evaluate import evaluate
 
-DEVICE = (
-    "cuda"
-    if torch.cuda.is_available()
-    else "mps" if torch.backends.mps.is_available() else "cpu"
-)
+DEVICE = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 TARGET_COLS = ["total_calories", "total_fat", "total_carb", "total_protein"]
 
 # image preprocessing for resnet
@@ -46,9 +42,7 @@ def visualize(model, history, y_mean, y_std, test_loader, test_raw):
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # evaluate on test set
-    test_mse, test_mae_per, test_r2_per, y_true_test, y_pred_test = evaluate(
-        model, test_loader, y_mean, y_std
-    )
+    test_mse, test_mae_per, test_r2_per, y_true_test, y_pred_test = evaluate(model, test_loader, y_mean, y_std)
     print("\nTEST metrics:")
     print(f"  MSE (standardized): {test_mse:.4f}")
     for name, mae, r2 in zip(TARGET_COLS, test_mae_per, test_r2_per):
@@ -123,21 +117,21 @@ def visualize(model, history, y_mean, y_std, test_loader, test_raw):
     # generate random sample visualizations
     model.eval()
 
-    def predict_one(pil_img):
-        x = img_tfm(pil_img.convert("RGB")).unsqueeze(0).to(DEVICE)
+    def predict_one(img_tensor):
+        x = img_tensor.unsqueeze(0).to(DEVICE)
         with torch.no_grad():
             use_amp = DEVICE == "cuda"
             with torch.amp.autocast("cuda", enabled=use_amp):
                 pred_scaled = model(x).squeeze(0).float().detach().cpu().numpy()
-        pred = pred_scaled * y_std + y_mean  # unscale
+        pred = pred_scaled * y_std.detach().cpu().numpy() + y_mean.detach().cpu().numpy()  # unscale
         return pred
 
     idxs = random.sample(range(len(test_raw)), 5)
     for i, idx in enumerate(idxs):
-        row = test_raw[idx]  # raw has 'image' + target cols
-        img = row["image"]
-        gt = np.array([float(row[c]) for c in TARGET_COLS], dtype=np.float32)
-        pred = predict_one(img)
+        img_tensor, gt_tensor = test_raw[idx]  # raw is (image_tensor, targets_tensor)
+        img = img_tensor.permute(1, 2, 0).numpy()  # Convert to HWC for plotting
+        gt = gt_tensor.numpy()
+        pred = predict_one(img_tensor)
 
         plt.figure(figsize=(10, 8))
         plt.imshow(img)
@@ -164,9 +158,7 @@ def visualize(model, history, y_mean, y_std, test_loader, test_raw):
         random_filename = f"random_sample_{i + 1}_{timestamp}.png"
         plt.savefig(os.path.join(random_dir, random_filename), bbox_inches="tight")
         plt.close()
-        print(
-            f"Random sample {i + 1} saved to reports/figures/Random/{random_filename}"
-        )
+        print(f"Random sample {i + 1} saved to reports/figures/Random/{random_filename}")
 
 
 if __name__ == "__main__":

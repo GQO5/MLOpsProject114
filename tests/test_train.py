@@ -47,6 +47,4 @@ def test_training_update():
 
     # Check B: Did the model actually learn?
     # The weights AFTER the step must be different from the weights BEFORE.
-    assert not torch.equal(
-        initial_weights, model.fc.weight
-    ), "Model weights did not update! Gradients are broken."
+    assert not torch.equal(initial_weights, model.fc.weight), "Model weights did not update! Gradients are broken."

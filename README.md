@@ -96,18 +96,18 @@ mkdir -p data
 # - metadata.jsonl → data/food-nutrients/
 # - All test images → data/food-nutrients/test/
 # Download the model from
-# - food101_model.pth → https://huggingface.co/VinnyVortex004/Food101-Classifier 
+# - food101_model.pth → https://huggingface.co/VinnyVortex004/Food101-Classifier
 
 ```
-Keep folder hierarchy as: 
+Keep folder hierarchy as:
 
 ```
 data/
 └── food-nutrients/
     ├── metadata.jsonl          # Dataset metadata and annotations
     ├── food101_model.pth       # Pretrained Food101 model weights
-    └── test/                   
-        ├── dish_1556572657.png 
+    └── test/
+        ├── dish_1556572657.png
         ├── dish_1556573514.png
         └── ...                 # All other test images
 ```

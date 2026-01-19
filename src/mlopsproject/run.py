@@ -38,9 +38,7 @@ def main(cfg):
     # Set device
     if cfg.device in ["unset", "auto"]:
         device = torch.device(
-            "cuda"
-            if torch.cuda.is_available()
-            else "mps" if torch.backends.mps.is_available() else "cpu"
+            "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
         )
     else:
         device = torch.device(cfg.device)
@@ -53,9 +51,7 @@ def main(cfg):
     print("Model Loaded")
 
     trainer = hydra.utils.instantiate(cfg.trainer.init, model=model, device=device)
-    model_trained, history, y_mean, y_std, test_loader, test_raw = trainer.train(
-        **cfg.trainer.train
-    )
+    model_trained, history, y_mean, y_std, test_loader, test_raw = trainer.train(**cfg.trainer.train)
 
     wandb.finish()
 

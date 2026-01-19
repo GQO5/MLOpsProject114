@@ -1,8 +1,8 @@
 defaults:
-  # - dataset: 
-  - trainer: trainResNet50   
-  # - logger: 
-  # - model: 
+  # - dataset:
+  - trainer: trainResNet50
+  # - logger:
+  # - model:
   - _self_
 
 seed_run: True # Whether to seed the run
