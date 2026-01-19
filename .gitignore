@@ -185,5 +185,5 @@ cython_debug/
 # Project Specific
 outputs/
 models/
+data/
 .ruff_cache/
-/data.zip
