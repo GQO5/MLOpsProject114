@@ -13,11 +13,7 @@ from torchvision import transforms
 
 from mlopsproject.evaluate import evaluate
 
-DEVICE = (
-    "cuda"
-    if torch.cuda.is_available()
-    else "mps" if torch.backends.mps.is_available() else "cpu"
-)
+DEVICE = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 TARGET_COLS = ["total_calories", "total_fat", "total_carb", "total_protein"]
 
 # image preprocessing for resnet
@@ -46,9 +42,7 @@ def visualize(model, history, y_mean, y_std, test_loader, test_raw):
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
     # evaluate on test set
-    test_mse, test_mae_per, test_r2_per, y_true_test, y_pred_test = evaluate(
-        model, test_loader, y_mean, y_std
-    )
+    test_mse, test_mae_per, test_r2_per, y_true_test, y_pred_test = evaluate(model, test_loader, y_mean, y_std)
     print("\nTEST metrics:")
     print(f"  MSE (standardized): {test_mse:.4f}")
     for name, mae, r2 in zip(TARGET_COLS, test_mae_per, test_r2_per):
@@ -164,9 +158,7 @@ def visualize(model, history, y_mean, y_std, test_loader, test_raw):
         random_filename = f"random_sample_{i + 1}_{timestamp}.png"
         plt.savefig(os.path.join(random_dir, random_filename), bbox_inches="tight")
         plt.close()
-        print(
-            f"Random sample {i + 1} saved to reports/figures/Random/{random_filename}"
-        )
+        print(f"Random sample {i + 1} saved to reports/figures/Random/{random_filename}")
 
 
 if __name__ == "__main__":

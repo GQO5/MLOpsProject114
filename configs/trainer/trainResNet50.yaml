@@ -6,7 +6,7 @@ train:
   total_epochs: 1
   validation_interval: 10
 
-# Passed to class instance arguments 
+# Passed to class instance arguments
 init:
   _target_: train.Food101ResNet50
   criterion:
@@ -20,5 +20,5 @@ init:
     _target_: torch.optim.lr_scheduler.StepLR
     _partial_: true
     step_size: 1
-    gamma: 0.975 
+    gamma: 0.975
   finetune: True

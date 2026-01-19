@@ -75,9 +75,7 @@ class FoodNutrientsDataset(Dataset):
         self.stats: Optional[Dict[str, Dict[str, float]]] = None
         if normalize_targets:
             if normalization_path is None:
-                raise ValueError(
-                    "normalization_path must be provided when normalize_targets=True"
-                )
+                raise ValueError("normalization_path must be provided when normalize_targets=True")
             self.stats = self._load_stats(normalization_path)
 
     def _default_transform(self) -> Callable:

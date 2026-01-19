@@ -59,16 +59,14 @@ def load_food_nutrients_dataset(
 
     if not data_dir.exists():
         print("Unzipping data.zip...")
-        with zipfile.ZipFile(data_zip, 'r') as zip_ref:
+        with zipfile.ZipFile(data_zip, "r") as zip_ref:
             zip_ref.extractall(".")  # extracts to current directory
         print("Unzipped.")
         data_zip.unlink()  # delete the zip file after successful extraction
         print("Deleted data.zip.")
 
     print("Loading dataset from data/food-nutrients directory...")
-    ds = load_dataset(
-        "imagefolder", data_dir=str(data_dir), split=split if split else "test"
-    )
+    ds = load_dataset("imagefolder", data_dir=str(data_dir), split=split if split else "test")
 
     print(f"SUCCESS: Dataset loaded. Columns found: {ds.column_names}")
 
@@ -136,9 +134,7 @@ def build_manifest_from_hf(ds_dict: DatasetDict, cfg: PreprocessConfig) -> pd.Da
         df_all = ds_dict[key].to_pandas()
 
         # Overwrite/Create split column
-        print(
-            f"DEBUG: Generating new train/val/test splits for {len(df_all)} samples..."
-        )
+        print(f"DEBUG: Generating new train/val/test splits for {len(df_all)} samples...")
         df_all[SPLIT_COL] = _make_splits(len(df_all), cfg)
 
     # Assign IDs
@@ -183,9 +179,7 @@ def export_images_and_update_manifest(
         images.extend(part[IMAGE_COL])
 
     if len(images) != len(manifest):
-        print(
-            f"WARNING: Image count ({len(images)}) != Manifest rows ({len(manifest)})"
-        )
+        print(f"WARNING: Image count ({len(images)}) != Manifest rows ({len(manifest)})")
 
     image_paths = []
     print(f"DEBUG: Exporting {len(images)} images to {images_dir}...")
@@ -251,9 +245,7 @@ def run_preprocessing(
     _ensure_dir(out_dir)
 
     print(f"Loading dataset: {cfg.dataset_name}...")
-    ds_dict = load_food_nutrients_dataset(
-        cfg.dataset_name, cfg.dataset_config_name, cfg.dataset_split
-    )
+    ds_dict = load_food_nutrients_dataset(cfg.dataset_name, cfg.dataset_config_name, cfg.dataset_split)
 
     print("Building manifest...")
     manifest = build_manifest_from_hf(ds_dict, cfg)

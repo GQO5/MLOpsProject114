@@ -1882,6 +1882,7 @@ dev = [
 [package.dev-dependencies]
 dev = [
     { name = "coverage" },
+    { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-cov" },
 ]
@@ -1919,6 +1920,7 @@ provides-extras = ["dev", "cpu", "cu128"]
 [package.metadata.requires-dev]
 dev = [
     { name = "coverage", specifier = ">=7.8.0" },
+    { name = "pre-commit", specifier = ">=4.1.0" },
     { name = "pytest", specifier = ">=8.3.4" },
     { name = "pytest-cov", specifier = ">=6.3.0" },
 ]

@@ -18,26 +18,14 @@ def load_data():
     common_args = {"batch_size": 32, "num_workers": 2, "pin_memory": True}
 
     # Training configs (Normalized Targets)
-    train_cfg = DatasetConfig(
-        split="train", shuffle=True, normalize_targets=True, **common_args
-    )
-    val_cfg = DatasetConfig(
-        split="val", shuffle=False, normalize_targets=True, **common_args
-    )
-    test_cfg = DatasetConfig(
-        split="test", shuffle=False, normalize_targets=True, **common_args
-    )
+    train_cfg = DatasetConfig(split="train", shuffle=True, normalize_targets=True, **common_args)
+    val_cfg = DatasetConfig(split="val", shuffle=False, normalize_targets=True, **common_args)
+    test_cfg = DatasetConfig(split="test", shuffle=False, normalize_targets=True, **common_args)
 
     # Visualization configs (Raw Targets)
-    train_raw_cfg = DatasetConfig(
-        split="train", shuffle=False, normalize_targets=False, **common_args
-    )
-    val_raw_cfg = DatasetConfig(
-        split="val", shuffle=False, normalize_targets=False, **common_args
-    )
-    test_raw_cfg = DatasetConfig(
-        split="test", shuffle=False, normalize_targets=False, **common_args
-    )
+    train_raw_cfg = DatasetConfig(split="train", shuffle=False, normalize_targets=False, **common_args)
+    val_raw_cfg = DatasetConfig(split="val", shuffle=False, normalize_targets=False, **common_args)
+    test_raw_cfg = DatasetConfig(split="test", shuffle=False, normalize_targets=False, **common_args)
 
     # 2. Create DataLoaders
     train_loader = make_dataloader(train_cfg)
@@ -50,12 +38,8 @@ def load_data():
         split="train",
         normalize_targets=False,
     )
-    val_raw = FoodNutrientsDataset(
-        manifest_path=val_raw_cfg.manifest_path, split="val", normalize_targets=False
-    )
-    test_raw = FoodNutrientsDataset(
-        manifest_path=test_raw_cfg.manifest_path, split="test", normalize_targets=False
-    )
+    val_raw = FoodNutrientsDataset(manifest_path=val_raw_cfg.manifest_path, split="val", normalize_targets=False)
+    test_raw = FoodNutrientsDataset(manifest_path=test_raw_cfg.manifest_path, split="test", normalize_targets=False)
 
     # 4. Extract Mean and Std
     if train_loader.dataset.stats is None:

@@ -18,9 +18,7 @@ def test_import_train():
 @patch("src.mlopsproject.train.torch.save")
 @patch("src.mlopsproject.train.load_model")
 @patch("src.mlopsproject.train.load_data")
-def test_train_execution(
-    mock_load_data, mock_load_model, mock_save, mock_evaluate, mock_visualize
-):
+def test_train_execution(mock_load_data, mock_load_model, mock_save, mock_evaluate, mock_visualize):
     """
     Integration Test: Runs train() with mocked data.
     Fixes the 'element 0 of tensors' crash by ensuring correct tensor shapes.
