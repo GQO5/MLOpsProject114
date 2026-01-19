@@ -123,21 +123,21 @@ def visualize(model, history, y_mean, y_std, test_loader, test_raw):
     # generate random sample visualizations
     model.eval()
 
-    def predict_one(pil_img):
-        x = img_tfm(pil_img.convert("RGB")).unsqueeze(0).to(DEVICE)
+    def predict_one(img_tensor):
+        x = img_tensor.unsqueeze(0).to(DEVICE)
         with torch.no_grad():
             use_amp = DEVICE == "cuda"
             with torch.amp.autocast("cuda", enabled=use_amp):
                 pred_scaled = model(x).squeeze(0).float().detach().cpu().numpy()
-        pred = pred_scaled * y_std + y_mean  # unscale
+        pred = pred_scaled * y_std.detach().cpu().numpy() + y_mean.detach().cpu().numpy()  # unscale
         return pred
 
     idxs = random.sample(range(len(test_raw)), 5)
     for i, idx in enumerate(idxs):
-        row = test_raw[idx]  # raw has 'image' + target cols
-        img = row["image"]
-        gt = np.array([float(row[c]) for c in TARGET_COLS], dtype=np.float32)
-        pred = predict_one(img)
+        img_tensor, gt_tensor = test_raw[idx]  # raw is (image_tensor, targets_tensor)
+        img = img_tensor.permute(1, 2, 0).numpy()  # Convert to HWC for plotting
+        gt = gt_tensor.numpy()
+        pred = predict_one(img_tensor)
 
         plt.figure(figsize=(10, 8))
         plt.imshow(img)

@@ -186,4 +186,4 @@ cython_debug/
 outputs/
 models/
 .ruff_cache/
-/data
+/data.zip

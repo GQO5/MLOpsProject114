@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import os
+import zipfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Optional, Tuple
@@ -51,19 +52,22 @@ def load_food_nutrients_dataset(
     split: Optional[str] = None,
 ) -> DatasetDict:
     """
-    Downloads the dataset locally using snapshot_download to avoid Windows path parsing issues
-    with 'hf://' URLs, then loads it as an imagefolder.
+    Unzips data.zip if not already done, then loads the dataset from the data/food-nutrients directory.
     """
-    print(f"DEBUG: Downloading dataset '{dataset_name}' to local cache...")
+    data_zip = Path("data.zip")
+    data_dir = Path("data/food-nutrients")
 
-    # 1. Download the entire repository to a local path managed by HF cache.
-    local_dir = snapshot_download(repo_id=dataset_name, repo_type="dataset")
-    print(f"DEBUG: Dataset downloaded to: {local_dir}")
+    if not data_dir.exists():
+        print("Unzipping data.zip...")
+        with zipfile.ZipFile(data_zip, 'r') as zip_ref:
+            zip_ref.extractall(".")  # extracts to current directory
+        print("Unzipped.")
+        data_zip.unlink()  # delete the zip file after successful extraction
+        print("Deleted data.zip.")
 
-    # 2. Load the dataset from the local directory.
-    print("DEBUG: Loading from local directory...")
+    print("Loading dataset from data/food-nutrients directory...")
     ds = load_dataset(
-        "imagefolder", data_dir=local_dir, split=split if split else "test"
+        "imagefolder", data_dir=str(data_dir), split=split if split else "test"
     )
 
     print(f"SUCCESS: Dataset loaded. Columns found: {ds.column_names}")
