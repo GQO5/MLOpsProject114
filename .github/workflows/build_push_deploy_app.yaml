@@ -3,7 +3,7 @@ name: Build, Push and Deploy Application using Docker and Cloud Run
 on:
   push:
     branches:
-      - feature/FrontBack-Docker-Deployment-GHA
+      - main
     paths:
       - 'src/mlopsproject/frontend/**'
       - 'src/mlopsproject/bento_backend/**'
@@ -99,7 +99,7 @@ jobs:
       - name: Build Backend Docker image using Cloud Build 
         run: |
             gcloud builds submit \
-              --config=cloudbuild.yaml \
+              --config=backendbuild.yaml \
               --suppress-logs \
               .
 
