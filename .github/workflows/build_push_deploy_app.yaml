@@ -1,0 +1,116 @@
+name: Build, Push and Deploy Application using Docker and Cloud Run
+
+on:
+  push:
+    branches:
+      - feature/FrontBack-Docker-Deployment-GHA
+    # paths:
+    #   - 'src/mlopsproject/frontend/**'
+    #   - 'src/mlopsproject/bento_backend/**'
+env:
+  REGION: europe-west1
+  PROJECT: mlops-group114
+  REPO: docker-images
+  FRONT_IMAGE: frontend:latest
+  BACK_IMAGE: backend:latest
+
+jobs:
+  # detect-changes:
+  #   name: Detect exact changes in frontend, backend, or both
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     frontend: ${{ steps.filter.outputs.frontend }}
+  #     backend: ${{ steps.filter.outputs.backend }}
+  #   steps:
+  #     - uses: actions/checkout@v4
+      
+  #     - uses: dorny/paths-filter@v2
+  #       id: filter
+  #       with:
+  #         filters: |
+  #           frontend:
+  #             - 'src/mlopsproject/frontend/**'
+  #           backend:
+  #             - 'src/mlopsproject/backend/**'
+
+  build-push-deploy-frontend:
+    name: Build, Push and Deploy docker imgs
+    #needs: detect-changes
+    #if: needs.detect-changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set Frontend var
+        run: echo "IMAGE_FRONT=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPO }}/${{ env.FRONT_IMAGE }}" >> $GITHUB_ENV
+
+      - name: Google cloud auth
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.GCS_DOCKER_IMAGES_KEY}}
+
+      - name: Set up Cloud SDK
+      - uses: google-github-actions/setup-gcloud@v1
+
+      - name: Configure Docker for Google Cloud
+        run: |
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+      - name: Build Frontend Docker image   
+        run: |
+            docker build -t $IMAGE_FRONT -f dockerfiles/frontend.dockerfile .  
+      
+      - name: Push Frontend Docker image to Google Registry
+        run: |
+          docker push $IMAGE_FRONT
+
+      - name: Deploy Frontend to Cloud Run
+        run: |
+          gcloud run deploy frontend-service \
+            --image $IMAGE_FRONT \
+            --region ${{ env.REGION }} \
+            --platform managed \
+            --allow-unauthenticated \
+
+  build-push-deploy-backend:
+    name: Build, Push and Deploy docker imgs
+    # needs: detect-changes
+    # if: needs.detect-changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set Backend var
+        run: echo "IMAGE_BACK=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPO }}/${{ env.BACK_IMAGE }}" >> $GITHUB_ENV
+
+      - name: Google cloud auth
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.GCS_DOCKER_IMAGES_KEY}}
+
+      - name: Set up Cloud SDK
+      - uses: google-github-actions/setup-gcloud@v1
+
+      - name: Configure Docker for Google Cloud
+        run: |
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+      - name: Build Backend Docker image  
+        run: |
+            docker build -t $IMAGE_BACK -f dockerfiles/backend.dockerfile .    
+
+      - name: Push Backend Docker image to Google Registry
+        run: |
+          docker push $IMAGE_BACK
+        
+      - name: Deploy Backend to Cloud Run
+        run: |
+          gcloud run deploy backend-service \
+            --image $IMAGE_BACK \
+            --region ${{ env.REGION }} \
+            --platform managed \
+            --allow-unauthenticated \
