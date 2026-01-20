@@ -1,0 +1,47 @@
+name: Model Registry Workflow
+
+on:
+  repository_dispatch:
+    types: [model-registry-event]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  model_testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install uv
+          uv sync
+
+      - name: Download and Test Model
+        env:
+          WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
+        run: |
+          echo "Model Registry tetiklendi! 🚀"
+          echo "Gelen model versiyonu: ${{ github.event.client_payload.version }}"
+
+          echo "## Model Registry Report" > model_report.md
+          echo "A new model version has been registered to W&B." >> model_report.md
+          echo "Model Version: ${{ github.event.client_payload.version }}" >> model_report.md
+
+      - name: Setup CML
+        uses: iterative/setup-cml@v2
+
+      - name: Comment on PR/Commit
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cml comment create model_report.md --watermark-title="Model Registry Check"
