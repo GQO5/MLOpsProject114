@@ -72,6 +72,7 @@ jobs:
             --image $IMAGE_FRONT \
             --region ${{ env.REGION }} \
             --platform managed \
+            --service-account=group114-serviceaccount@mlops-group114.iam.gserviceaccount.com \
             --allow-unauthenticated \
 
   build-push-deploy-backend:
@@ -95,22 +96,17 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - name: Configure Docker for Google Cloud
+      - name: Build Backend Docker image using Cloud Build 
         run: |
-          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+            gcloud builds submit \
+              --tag $IMAGE_BACK \
+              --file dockerfiles/backend.dockerfile .
 
-      - name: Build Backend Docker image  
-        run: |
-            docker build -t $IMAGE_BACK -f dockerfiles/backend.dockerfile .    
-
-      - name: Push Backend Docker image to Google Registry
-        run: |
-          docker push $IMAGE_BACK
-        
       - name: Deploy Backend to Cloud Run
         run: |
           gcloud run deploy backend \
             --image $IMAGE_BACK \
             --region ${{ env.REGION }} \
             --platform managed \
+            --service-account=group114-serviceaccount@mlops-group114.iam.gserviceaccount.com \
             --allow-unauthenticated \
