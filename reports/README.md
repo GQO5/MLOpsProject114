@@ -134,7 +134,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
-s253733
+s253733, s253814
 
 ### Question 3
 > **Did you end up using any open-source frameworks/packages not covered in the course during your project? If so**
@@ -299,7 +299,7 @@ Yes, we used branches and pull requests throughout our project workflow to ensur
 >
 > Answer:
 
---- question 12 fill here ---
+We used Hydra to handle our training hyperparameters. Inside configs/, we created run.yaml where a seed can be specified, and where the default configuration for the trainer is selected. The trainer configuration is found inside configs/trainer/trainResNet50.yaml, which contains the training hyperparameters such as learning rate or number of epochs. You can run an experiment overriding parameters using: uv run invoke train --overrides= "trainer.train.total_epochs=50 trainer.init.optimizer.lr=0.001".
 
 ### Question 13
 
