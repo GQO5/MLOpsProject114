@@ -1,14 +1,7 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     id: 'Build container image'
-    args: [
-      'build',
-      '.',
-      '-t',
-      ${_IMAGE_TAG},
-      '-f',
-      'dockerfiles/backend.dockerfile'
-    ]
+    args: ['build', '-f', 'dockerfiles/backend.dockerfile', '-t', '${_IMAGE_TAG}', '.']
   - name: 'gcr.io/cloud-builders/docker'
     id: 'Push container image'
     args: [
