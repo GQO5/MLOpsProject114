@@ -19,8 +19,6 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
   "invoke==2.2.0",
-  # "torch>=2.9.1",
-  # "torchvision>=0.24.1",
   "datasets==3.2.0",
   "matplotlib==3.10.0",
   "numpy==2.2.0",
