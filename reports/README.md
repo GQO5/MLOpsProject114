@@ -123,7 +123,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 1 fill here ---
+114
 
 ### Question 2
 > **Enter the study number for each member in the group**
@@ -134,7 +134,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 2 fill here ---
+s253733
 
 ### Question 3
 > **Did you end up using any open-source frameworks/packages not covered in the course during your project? If so**
@@ -248,7 +248,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
---- question 9 fill here ---
+Yes, we used branches and pull requests throughout our project workflow to ensure collabration safety. Instead of pushing directly to the main branch, we adopted a feature branch workflow For every new task such as implementing pre-commit hooks we created a dedicated brach. This allow us to test features without risking stability of code. Once the feature was ready, we opened a Pull Reguest and we used this stage automatically run unit tests and linters. For instance, we often encountered linting errors during the PR process, which prevented broken code from merging. We only merged the branch into main after CI checks passed. This workflow signigicantly reduced merge confilicts and kept our main branc clean.
 
 ### Question 10
 
