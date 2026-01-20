@@ -1,97 +1,112 @@
 from unittest.mock import MagicMock, patch
-
 import pytest
 import torch
+import torch.nn as nn
 
-from src.mlopsproject.train import train
+# 1. IMPORTANT: We import the CLASS, not a 'train' function
+from src.mlopsproject.train import Food101ResNet50
 
-
-# Ensure train module exists
 def test_import_train():
-    from src.mlopsproject import train
+    # Verify that the class exists
+    from src.mlopsproject.train import Food101ResNet50
+    assert Food101ResNet50 is not None
 
-    assert train is not None
-
-
+@patch("src.mlopsproject.train.wandb")  # Mock wandb so it doesn't try to connect to the internet
 @patch("src.mlopsproject.train.visualize")
 @patch("src.mlopsproject.train.evaluate")
 @patch("src.mlopsproject.train.torch.save")
-@patch("src.mlopsproject.train.load_model")
 @patch("src.mlopsproject.train.load_data")
-def test_train_execution(mock_load_data, mock_load_model, mock_save, mock_evaluate, mock_visualize):
+def test_train_execution(mock_load_data, mock_save, mock_evaluate, mock_visualize, mock_wandb):
     """
-    Integration Test: Runs train() with mocked data.
-    Fixes the 'element 0 of tensors' crash by ensuring correct tensor shapes.
+    Integration Test: Instantiates the Food101ResNet50 class and runs train().
     """
 
     # ---------------------------------------------------------
-    # 1. Setup Mock Data
+    # 1. Setup Mock Data (Same as before)
     # ---------------------------------------------------------
-    # Create tensors on CPU (train.py handles moving them to device)
-    # Batch=2, Channels=3, H=224, W=224
     dummy_x = torch.randn(2, 3, 224, 224)
-    dummy_y = torch.randn(2, 4)  # 4 targets
+    dummy_y = torch.randn(2, 4) 
 
-    # Create a proper Mock Loader
-    # We use a MagicMock that acts as an iterator
     mock_loader = MagicMock()
     mock_loader.__iter__.return_value = iter([(dummy_x, dummy_y)])
     mock_loader.__len__.return_value = 1
 
-    # Mock load_data return values
-    # Must match: train_loader, val_loader, test_loader, raw_train, raw_val, raw_test, y_mean, y_std
     mock_load_data.return_value = (
-        mock_loader,  # train
-        mock_loader,  # val
-        mock_loader,  # test
-        [],
-        [],
-        [],  # raw data (lists)
-        torch.tensor(0.0),  # y_mean (tensor to be safe)
-        torch.tensor(1.0),  # y_std (tensor to be safe)
+        mock_loader, # train
+        mock_loader, # val
+        mock_loader, # test
+        [], [], [],  # raw data
+        torch.tensor(0.0), 
+        torch.tensor(1.0),
     )
 
     # ---------------------------------------------------------
     # 2. Setup Mock Model
     # ---------------------------------------------------------
-    # Create a real, simple model class to avoid mocking issues with .parameters()
     class TinyModel(torch.nn.Module):
         def __init__(self):
             super().__init__()
-            # Must have a layer named 'fc' for train.py's freezing logic
-            self.fc = torch.nn.Linear(10, 4)
+            self.fc = torch.nn.Linear(10, 4) # Necessary for the freezing logic
 
         def forward(self, x):
-            # Return shape [Batch, 4] to match dummy_y
             return torch.randn(x.shape[0], 4, requires_grad=True)
 
-    # return_value must be an INSTANCE of the model
-    mock_load_model.return_value = TinyModel()
+    real_model = TinyModel()
 
     # ---------------------------------------------------------
     # 3. Setup Mock Evaluate
     # ---------------------------------------------------------
-    # evaluate() returns: mse, mae_per, r2_per, ..., ...
-    # We return dummy values to prevent unpacking errors
     mock_evaluate.return_value = (
-        0.5,  # val_mse
-        [0.1] * 4,  # val_mae_per (list of 4 floats)
-        [0.1] * 4,  # val_r2_per (list of 4 floats)
-        torch.tensor([0.1] * 4),  # Extra return 1
-        torch.tensor([0.1] * 4),  # Extra return 2
+        0.5, # val_mse
+        [0.1] * 4, # val_mae_per
+        [0.1] * 4, # val_r2_per
+        torch.tensor([0.1] * 4),
+        torch.tensor([0.1] * 4),
     )
 
     # ---------------------------------------------------------
-    # 4. Run Test
+    # 4. PREPARE CLASS DEPENDENCIES (New)
+    # ---------------------------------------------------------
+    
+    # Mock Criterion (Loss function)
+    mock_criterion = MagicMock()
+    mock_criterion.return_value = torch.tensor(0.5, requires_grad=True)
+
+    # Mock Optimizer CLASS
+    # Your code does: self.optimizer = optimizer(params=...)
+    # So we pass a Mock that acts as the optimizer CLASS
+    mock_optimizer_cls = MagicMock()
+    mock_optimizer_instance = MagicMock()
+    # Necessary for the log: self.optimizer.param_groups[0]["lr"]
+    mock_optimizer_instance.param_groups = [{"lr": 0.001}] 
+    mock_optimizer_cls.return_value = mock_optimizer_instance
+
+    # Mock Scheduler CLASS
+    mock_scheduler_cls = MagicMock()
+    mock_scheduler_instance = MagicMock()
+    mock_scheduler_cls.return_value = mock_scheduler_instance
+
+    # ---------------------------------------------------------
+    # 5. Execute the Test
     # ---------------------------------------------------------
     try:
-        # call the function
-        train()
+        # Instantiate the class with all necessary mocks
+        trainer = Food101ResNet50(
+            criterion=mock_criterion,
+            optimizer=mock_optimizer_cls,
+            scheduler=mock_scheduler_cls,
+            device="cpu", # Use CPU for the test
+            model=real_model,
+            finetune=False
+        )
+
+        # Execute the train method
+        trainer.train(total_epochs=1) # Only 1 epoch to keep it fast
+
     except Exception as e:
         pytest.fail(f"Train script crashed with error: {e}")
 
-    # Verify key functions were called
+    # Verifications
     assert mock_load_data.called
-    assert mock_load_model.called
-    # We check if save was called (means we reached the end of the script)
     assert mock_save.called
+    assert mock_wandb.log.called # Verify that we tried to log to wandb
