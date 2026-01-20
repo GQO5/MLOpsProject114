@@ -100,7 +100,7 @@ jobs:
         run: |
             gcloud builds submit \
               --config=cloudbuild.yaml \
-              --supress-logs \
+              --suppress-logs \
               .
 
       - name: Deploy Backend to Cloud Run
