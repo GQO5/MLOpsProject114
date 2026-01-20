@@ -1,0 +1,20 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Build container image'
+    args: [
+      'build',
+      '.',
+      '-t',
+      ${_IMAGE_TAG},
+      '-f',
+      'dockerfiles/backend.dockerfile'
+    ]
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Push container image'
+    args: [
+      'push',
+      ${_IMAGE_TAG}
+    ]
+
+substitutions:
+  _IMAGE_TAG: 'europe-west1-docker.pkg.dev/mlops-group114/docker-images/backend:latest'

@@ -99,8 +99,8 @@ jobs:
       - name: Build Backend Docker image using Cloud Build 
         run: |
             gcloud builds submit \
-              --tag $IMAGE_BACK \
-              dockerfiles/backend.dockerfile 
+              --config=cloudbuild.yaml \
+              .
 
       - name: Deploy Backend to Cloud Run
         run: |
