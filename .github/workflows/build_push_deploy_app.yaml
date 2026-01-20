@@ -34,7 +34,7 @@ jobs:
   #             - 'src/mlopsproject/backend/**'
 
   build-push-deploy-frontend:
-    name: Build, Push and Deploy docker imgs
+    name: Build, Push and Deploy docker Frontend img
     #needs: detect-changes
     #if: needs.detect-changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
@@ -68,14 +68,14 @@ jobs:
 
       - name: Deploy Frontend to Cloud Run
         run: |
-          gcloud run deploy frontend-service \
+          gcloud run deploy frontend \
             --image $IMAGE_FRONT \
             --region ${{ env.REGION }} \
             --platform managed \
             --allow-unauthenticated \
 
   build-push-deploy-backend:
-    name: Build, Push and Deploy docker imgs
+    name: Build, Push and Deploy docker Backend img
     # needs: detect-changes
     # if: needs.detect-changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
@@ -109,7 +109,7 @@ jobs:
         
       - name: Deploy Backend to Cloud Run
         run: |
-          gcloud run deploy backend-service \
+          gcloud run deploy backend \
             --image $IMAGE_BACK \
             --region ${{ env.REGION }} \
             --platform managed \
