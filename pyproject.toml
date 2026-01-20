@@ -37,7 +37,8 @@ dependencies = [
   "dvc>=3.66.1",
   "dvc-gs>=3.0.2",
   "mypy[dev]>=1.19.1",
-
+  "loguru>=0.7.3",
+  "markdown>=3.10",
 ]
 [project.optional-dependencies]
 dev = [
