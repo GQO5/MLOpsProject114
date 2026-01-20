@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - feature/FrontBack-Docker-Deployment-GHA
-    # paths:
-    #   - 'src/mlopsproject/frontend/**'
-    #   - 'src/mlopsproject/bento_backend/**'
+    paths:
+      - 'src/mlopsproject/frontend/**'
+      - 'src/mlopsproject/bento_backend/**'
 env:
   REGION: europe-west1
   PROJECT: mlops-group114
@@ -15,28 +15,28 @@ env:
   BACK_IMAGE: backend:latest
 
 jobs:
-  # detect-changes:
-  #   name: Detect exact changes in frontend, backend, or both
-  #   runs-on: ubuntu-latest
-  #   outputs:
-  #     frontend: ${{ steps.filter.outputs.frontend }}
-  #     backend: ${{ steps.filter.outputs.backend }}
-  #   steps:
-  #     - uses: actions/checkout@v4
+  detect-changes:
+    name: Detect exact changes in frontend, backend, or both
+    runs-on: ubuntu-latest
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
       
-  #     - uses: dorny/paths-filter@v2
-  #       id: filter
-  #       with:
-  #         filters: |
-  #           frontend:
-  #             - 'src/mlopsproject/frontend/**'
-  #           backend:
-  #             - 'src/mlopsproject/backend/**'
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'src/mlopsproject/frontend/**'
+            backend:
+              - 'src/mlopsproject/bento_backend/**'
 
   build-push-deploy-frontend:
     name: Build, Push and Deploy docker Frontend img
-    #needs: detect-changes
-    #if: needs.detect-changes.outputs.frontend == 'true'
+    needs: detect-changes
+    if: needs.detect-changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -77,8 +77,8 @@ jobs:
 
   build-push-deploy-backend:
     name: Build, Push and Deploy docker Backend img
-    # needs: detect-changes
-    # if: needs.detect-changes.outputs.backend == 'true'
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
 
     steps:

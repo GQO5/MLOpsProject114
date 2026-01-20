@@ -31,7 +31,9 @@ def classify_image(image, backend) -> dict:
         if response.status_code == 200:
             return response.json()
     except requests.exceptions.Timeout:
-        st.toast("❌ Backend took too long, probably waking up. Please try again.", icon="❌")
+        st.toast(
+            "❌ Backend took too long, probably waking up. Please try again.", icon="❌"
+        )
 
     return None
 
