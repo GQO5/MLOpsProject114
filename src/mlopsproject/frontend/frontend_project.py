@@ -24,12 +24,15 @@ def get_backend_url():
 def classify_image(image, backend) -> dict:
     """Send the image to the backend for classification."""
     predict_url = f"{backend}/predict"
-    # print(f"Sending request to backend at {predict_url}")
-    response = requests.post(
-        predict_url, files={"image": image}, timeout=10
-    )  # "file" must match with backend endpoint argument
-    if response.status_code == 200:
-        return response.json()
+    try:
+        response = requests.post(
+            predict_url, files={"image": image}, timeout=10
+        )  # "file" must match with backend endpoint argument
+        if response.status_code == 200:
+            return response.json()
+    except requests.exceptions.Timeout:
+        st.toast("❌ Backend took too long, probably waking up. Please try again.", icon="❌")
+
     return None
 
 
