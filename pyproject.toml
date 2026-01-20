@@ -19,6 +19,8 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
   "invoke==2.2.0",
+  "torch>=2.9.1",
+  "torchvision>=0.24.1",
   "datasets==3.2.0",
   "matplotlib==3.10.0",
   "numpy==2.2.0",
@@ -51,12 +53,12 @@ dev = [
 ]
 
 cpu = [
-  "torch",
-  "torchvision",
+  "torch>=2.9.1",
+  "torchvision>=0.24.1",
 ]
 cu128 = [
-  "torch",
-  "torchvision",
+  "torch>=2.9.1",
+  "torchvision>=0.24.1",
 ]
 
 [tool.uv]
@@ -76,11 +78,6 @@ torchvision = [
   { index = "pytorch-cpu", extra = "cpu" },
   { index = "pytorch-cu128", extra = "cu128" },
 ]
-
-[tool.uv.required-environments]
-linux-x86_64 = "sys_platform == 'linux' and platform_machine == 'x86_64'"
-macos-arm64 = "sys_platform == 'darwin' and platform_machine == 'arm64'"
-windows-x86_64 = "sys_platform == 'win32' and platform_machine == 'AMD64'"
 
 [[tool.uv.index]]
 name = "pytorch-cpu"

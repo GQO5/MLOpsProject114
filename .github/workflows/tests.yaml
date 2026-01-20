@@ -28,7 +28,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --extra dev --extra cpu
+          uv sync --extra dev 
 
 
       - name: Run tests & coverage
