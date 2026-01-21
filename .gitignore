@@ -3,6 +3,9 @@ docs/site/
 # W&B runs
 wandb/
 
+# Models 
+models/ 
+
 # Generated figures
 reports/figures/
 
