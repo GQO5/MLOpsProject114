@@ -10,11 +10,7 @@ from PIL import Image as PILImage
 
 app = FastAPI(title="Food Nutrients Prediction API")
 
-DEVICE = (
-    "cuda"
-    if torch.cuda.is_available()
-    else "mps" if torch.backends.mps.is_available() else "cpu"
-)
+DEVICE = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 
 # TODO: These should be loaded from the trained model metadata
 Y_MEAN = np.array([253.70776, 12.700077, 19.36578, 17.732618], dtype=np.float32)

@@ -7,18 +7,19 @@ from unittest.mock import patch, MagicMock
 # Adjust import based on your project structure
 from src.mlopsproject.model import load_model, MODEL_PATH
 
-@patch("os.path.exists")                 # 1. Mock file existence check
-@patch("torch.load")                     # 2. Mock loading the .pth file
-@patch("torch.nn.Module.load_state_dict") # 3. Mock applying weights
+
+@patch("os.path.exists")  # 1. Mock file existence check
+@patch("torch.load")  # 2. Mock loading the .pth file
+@patch("torch.nn.Module.load_state_dict")  # 3. Mock applying weights
 def test_model_architecture(mock_load_state_dict, mock_torch_load, mock_path_exists):
     """
     Test architecture without real weights file.
     """
     # A. Setup Mocks
     mock_path_exists.return_value = True  # Pretend file exists
-    mock_torch_load.return_value = {}     # Return empty dict for weights
+    mock_torch_load.return_value = {}  # Return empty dict for weights
     # mock_load_state_dict will just do nothing, preventing errors from the empty dict
-    
+
     # B. Run Function
     # We pass None for cfg since your code doesn't strictly use it in the snippet
     model = load_model(cfg=None)
@@ -28,7 +29,7 @@ def test_model_architecture(mock_load_state_dict, mock_torch_load, mock_path_exi
     # Now we check if the head was correctly replaced
     assert isinstance(model, nn.Module)
     assert model.fc.out_features == 4, "Output features should be 4 (calories, fat, carb, protein)"
-    
+
     # D. Verify Mocks were used
     # Ensure it actually tried to check for the file at the specific path
     mock_path_exists.assert_called_with(MODEL_PATH)
@@ -47,7 +48,7 @@ def test_model_forward_pass(mock_load_state_dict, mock_torch_load, mock_path_exi
 
     # Run Function
     model = load_model(cfg=None)
-    
+
     # 1. Create a dummy input (Batch=1, Channels=3, Height=224, Width=224)
     dummy_input = torch.randn(1, 3, 224, 224)
 

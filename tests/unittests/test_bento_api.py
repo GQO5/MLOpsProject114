@@ -23,12 +23,8 @@ def test_predict_endpoint():
 
     files = {"image": ("test.jpg", img_bytes, "image/jpeg")}
     response = requests.post(url, files=files)
-    assert (
-        response.status_code == 200
-    ), f"Unexpected status code: {response.status_code}"
+    assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
     data = response.json()
     for key in ["total_calories", "total_fat", "total_carb", "total_protein"]:
         assert key in data, f"Missing key in response: {key}"
-        assert isinstance(
-            data[key], float
-        ), f"Expected float for {key}, got {type(data[key])}"
+        assert isinstance(data[key], float), f"Expected float for {key}, got {type(data[key])}"

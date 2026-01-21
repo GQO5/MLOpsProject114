@@ -37,9 +37,7 @@ class ImageClassifierService:
     """Image classifier service using torch model and GPU."""
 
     def __init__(self) -> None:
-        self.model_weights = torch.load(
-            f"models/model_20260118_135410_FT_True.pth", map_location=DEVICE
-        )
+        self.model_weights = torch.load(f"models/model_20260118_135410_FT_True.pth", map_location=DEVICE)
         self.n_outputs = 4  # calories, fat, carb, protein
         # Get model architecture: ResNet50 + regression head with 4 outputs
         self.model = models.resnet50(weights=None, num_classes=self.n_outputs)
@@ -52,9 +50,7 @@ class ImageClassifierService:
             [
                 transforms.Resize((224, 224)),
                 transforms.ToTensor(),
-                transforms.Normalize(
-                    mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
-                ),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
             ],
         )
 

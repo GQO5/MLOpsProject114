@@ -91,7 +91,9 @@ def build_backend_docker(ctx: Context, progress: str = "plain") -> None:
 
 
 @task
-def run_frontend_docker(ctx: Context, port: int = 8503, backend_url: str = "https://backend-582302018737.europe-west1.run.app") -> None:
+def run_frontend_docker(
+    ctx: Context, port: int = 8503, backend_url: str = "https://backend-582302018737.europe-west1.run.app"
+) -> None:
     """Run frontend docker container."""
     ctx.run(
         f"docker run --rm -e PORT={port} -e BACKEND={backend_url} -p {port}:{port} frontend:latest",

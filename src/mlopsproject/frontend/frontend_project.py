@@ -31,9 +31,7 @@ def classify_image(image, backend) -> dict:
         if response.status_code == 200:
             return response.json()
     except requests.exceptions.Timeout:
-        st.toast(
-            "❌ Backend took too long, probably waking up. Please try again.", icon="❌"
-        )
+        st.toast("❌ Backend took too long, probably waking up. Please try again.", icon="❌")
 
     return None
 
@@ -57,9 +55,7 @@ def main() -> None:
     if backend is None:
         msg = "Backend service not found"
         raise ValueError(msg)
-    uploaded_file = st.file_uploader(
-        "Drag & drop your food image here", type=["jpg", "jpeg", "png"]
-    )
+    uploaded_file = st.file_uploader("Drag & drop your food image here", type=["jpg", "jpeg", "png"])
     st.markdown("")  # Spacing
     if uploaded_file is not None:
         image = uploaded_file.read()
@@ -94,9 +90,7 @@ def main() -> None:
                 )
             )
 
-            st.caption(
-                "*AI estimates are approximate. Values may vary based on specific brands and cooking methods."
-            )
+            st.caption("*AI estimates are approximate. Values may vary based on specific brands and cooking methods.")
         # ================================
 
 
