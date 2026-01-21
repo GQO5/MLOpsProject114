@@ -134,7 +134,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
-s253733, s253814
+s253733, s253814, s252802
 
 ### Question 3
 > **Did you end up using any open-source frameworks/packages not covered in the course during your project? If so**
@@ -168,8 +168,7 @@ s253733, s253814
 >
 > Answer:
 
---- question 4 fill here ---
-
+We used Uv to manage our dependencies because it's the latest industry trend. We defined our project requirements in a PyProject.toml file. To obtain a complete copy of our development environment, someone who has Uv installed must run the command "uv sync."
 ### Question 5
 
 > **We expect that you initialized your project using the cookiecutter template. Explain the overall structure of your**
@@ -184,7 +183,7 @@ s253733, s253814
 >
 > Answer:
 
---- question 5 fill here ---
+We initialized our project using the course-specific Cookiecutter template. We worked primarily within the "src" directory for our source code and the "configs" directory to manage hyperparameters with Hydra. We used the provided Dockerfiles folder for containerization and PyProject.toml for dependency management.
 
 ### Question 6
 
@@ -199,7 +198,7 @@ s253733, s253814
 >
 > Answer:
 
---- question 6 fill here ---
+We implemented code quality and formatting rules using Ruff as our linter and formatter. We automated this process using GitHub Actions to ensure that all code pushed to the repository aligns to PEP 8 standards. 
 
 ## Version control
 
@@ -218,7 +217,7 @@ s253733, s253814
 >
 > Answer:
 
---- question 7 fill here ---
+In total, we implemented four tests. Our primary focus was unit testing our critical components. For example, test_data.py verifies that our data loaders return the correct types and shapes of data. Meanwhile, test_model.py confirms that our model architecture processes inputs and produces outputs with the expected dimensions. We also implemented integration tests (test_integration.py) to ensure that the entire training pipeline runs without crashing from start to finish. 
 
 ### Question 8
 
@@ -233,7 +232,7 @@ s253733, s253814
 >
 > Answer:
 
---- question 8 fill here ---
+Wait, im going to add more test since they change the src?
 
 ### Question 9
 
@@ -263,7 +262,7 @@ Yes, we used branches and pull requests throughout our project workflow to ensur
 >
 > Answer:
 
---- question 10 fill here ---
+We used DVC to manage our data, versioning the compressed dataset artifact, data.zip. Instead of pushing large files to GitHub, we stored the actual data in a Google Cloud Storage bucket (gs://group114-bucket) and only tracked the lightweight data.zip.dvc file in our Git repository. This setup streamlined our workflow by maintaining a clean, lightweight version control history. Any team member (or new environment) could retrieve the exact version of the dataset used for training by running "dvc pull." 
 
 ### Question 11
 
@@ -280,7 +279,16 @@ Yes, we used branches and pull requests throughout our project workflow to ensur
 >
 > Answer:
 
---- question 11 fill here ---
+We have organized our continuous integration process into a series of GitHub Actions workflows, each with a specific responsibility:
+
+Quality Assurance: We use linting.yaml and codecheck.yaml with Ruff to enforce coding style and formatting standards. We also use Dependabot (dependabot.yaml) to automatically detect and suggest updates for our dependencies.
+
+Testing: The tests.yaml workflow runs our Pytest suite to verify the unit and integration tests. It is triggered by every pull request and push to the main branch. It uses a build matrix to run these tests on Ubuntu, Windows, and macOS, ensuring cross-platform compatibility.
+
+CML and MLOps Automation:
+We implemented an event-driven CML_MODEL.YAML workflow that is triggered by a repository_dispatch signal from our model registry. This integration uses CML to automatically generate and post a Markdown report (model_report.md) as a comment on the repository whenever a new model version is registered. This ensures automated visibility for model updates.
+
+Deployment: We use Google Cloud Build, as defined in backendbuild.yaml, for containerization. This pipeline builds our Docker image (backend:latest) and pushes it to the Artifact Registry using the gcr.io/cloud-builders/docker builder.
 
 ## Running code and tracking experiments
 
@@ -314,7 +322,7 @@ We used Hydra to handle our training hyperparameters. Inside configs/, we create
 >
 > Answer:
 
---- question 13 fill here ---
+We ensured reproducibility by strictly decoupling the configuration from the code using Hydra. We use Weights & Biases (WandB) to automatically log the hyperparameters and resulting metrics used whenever an experiment is run.
 
 ### Question 14
 
@@ -361,7 +369,7 @@ We used Hydra to handle our training hyperparameters. Inside configs/, we create
 >
 > Answer:
 
---- question 16 fill here ---
+We debugged our experiments using a hybrid approach. Using the VS Code debugger, we stepped through the logic and inspected the Docker logs for environmental issues. We also frequently consulted AI tools and technical videos to quickly interpret complex error stacks. Regarding profiling, we do not consider our code to be perfect. Rather than running deep profiling scripts, we monitored the system metrics in Weights & Biases.
 
 ## Working in the cloud
 
