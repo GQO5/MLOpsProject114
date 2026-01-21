@@ -16,7 +16,7 @@ WORKDIR /app
 # ==========================================
 # We include gcc because 'setuptools' in pyproject.toml might need to compile things
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc build-essential && \
+    apt-get install -y --no-install-recommends gcc build-essential git && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ==========================================
@@ -34,16 +34,23 @@ RUN uv sync --locked --no-dev --no-install-project
 # ==========================================
 # 5. Application Code
 # ==========================================
-# Copy the source code, data and the README
+# Copy the source code, data DVC file and the README
 COPY src/ ./src/
-COPY data/ ./data/
+COPY data.zip.dvc ./
+COPY .dvc/ ./.dvc/
+COPY tasks.py ./
+COPY configs/ ./configs/
 COPY README.md ./
+COPY train.sh ./
 
 # Install the project itself (so imports like 'import mlopsproject' work)
 RUN uv sync --locked --no-dev
 
+# Make train.sh executable
+RUN chmod +x train.sh
+
 # ==========================================
 # 6. Runtime
 # ==========================================
-# We use 'uv run' to ensure the virtual environment is active
-ENTRYPOINT ["uv", "run", "src/mlopsproject/train.py"]
+# Run the training script
+ENTRYPOINT ["./train.sh"]
