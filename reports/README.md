@@ -148,7 +148,7 @@ s253733, s253814, s252802
 >
 > Answer:
 
---- question 3 fill here ---
+............  For code quality, we adopted Ruff which replaced multiple tools (like Flake8, Isort and Black) due to its superior speed. We also used Uv for dependency manangement which significantly reduced our environment setup time compared to Pip or Conda.
 
 ## Coding environment
 
