@@ -5,7 +5,7 @@ import torch.nn as nn
 from unittest.mock import patch, MagicMock
 
 # Adjust import based on your project structure
-from src.mlopsproject.model import load_model, MODEL_PATH
+from mlopsproject.model import load_model, MODEL_PATH
 
 
 @patch("os.path.exists")  # 1. Mock file existence check

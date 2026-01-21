@@ -4,21 +4,21 @@ import torch
 import torch.nn as nn
 
 # 1. IMPORTANT: We import the CLASS, not a 'train' function
-from src.mlopsproject.train import Food101ResNet50
+from mlopsproject.train import Food101ResNet50
 
 
 def test_import_train():
     # Verify that the class exists
-    from src.mlopsproject.train import Food101ResNet50
+    from mlopsproject.train import Food101ResNet50
 
     assert Food101ResNet50 is not None
 
 
-@patch("src.mlopsproject.train.wandb")  # Mock wandb so it doesn't try to connect to the internet
-@patch("src.mlopsproject.train.visualize")
-@patch("src.mlopsproject.train.evaluate")
-@patch("src.mlopsproject.train.torch.save")
-@patch("src.mlopsproject.train.load_data")
+@patch("mlopsproject.train.wandb")  # Mock wandb so it doesn't try to connect to the internet
+@patch("mlopsproject.train.visualize")
+@patch("mlopsproject.train.evaluate")
+@patch("mlopsproject.train.torch.save")
+@patch("mlopsproject.train.load_data")
 def test_train_execution(mock_load_data, mock_save, mock_evaluate, mock_visualize, mock_wandb):
     """
     Integration Test: Instantiates the Food101ResNet50 class and runs train().
