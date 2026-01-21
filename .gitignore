@@ -6,9 +6,6 @@ wandb/
 # Models 
 models/ 
 
-# Generated figures
-reports/figures/
-
 # test cache
 manual_test/
 

@@ -322,7 +322,7 @@ We used Hydra to handle our training hyperparameters. Inside configs/, we create
 >
 > Answer:
 
-We ensured reproducibility by strictly decoupling the configuration from the code using Hydra. We use Weights & Biases (WandB) to automatically log the hyperparameters and resulting metrics used whenever an experiment is run.
+We ensured reproducibility by strictly decoupling the configuration from the code using Hydra, and including a seed to ensure consistent results. One can set the seed_run parameter in configs/run.yaml. We use Weights & Biases (WandB) to automatically log the hyperparameters and resulting metrics used whenever an experiment is run. Whenever an experiment is started, the program's entry point is at src/mlopsproject/run.py, where we load our experiment configuration using Hydra and instantiate the necessary components to start the training process, taking advantage of a dependency injection pattern, which makes it very easy to swap components, such as different datasets, models, trainers, or loggers if needed.
 
 ### Question 14
 
@@ -354,7 +354,7 @@ We ensured reproducibility by strictly decoupling the configuration from the cod
 >
 > Answer:
 
---- question 15 fill here ---
+Docker is an amazing tool that we used to containerize important parts of our project, ensuring consistency across different environments, and simplifying deployments in the cloud. In our case, we have 4 main Docker images: train, frontend, backend (BentoML), and api (FastAPI). Each container is designed to accomplish a specific task, such as initializing our streamlit frontend service, starting a training job, or initializing our backend API, all with their corresponding dependencies, such as python packages or required files to run. To simplify the building and running process of the frontend and backend images, which typically require long commands with multiple flags, we created different tasks using invoke to simplyfy this. For example, to build the backend image, one would run "uv run invoke build-backend-docker" and to run it "uv run invoke run-frontend-docker", where you could specify different parameters such as the port. You can find our backend docker file here: https://github.com/GQO5/MLOpsProject114/blob/main/dockerfiles/backend.dockerfile.
 
 ### Question 16
 
@@ -386,7 +386,14 @@ We debugged our experiments using a hybrid approach. Using the VS Code debugger,
 >
 > Answer:
 
---- question 17 fill here ---
+For our project, we utilized several GCP services:
+1. Compute Engine: We used Compute Engine to create virtual machines (VMs) for training our machine learning models. This service provided us with scalable computing resources, allowing us to choose VM types that matched our computational needs.
+2. Cloud Storage (GCP Bucket): We used Cloud Storage to store our dataset.
+3. Artifact Registry: We used Artifact Registry to store and manage our Docker images. This service allowed us to easily deploy our containerized applications.
+4. Cloud Build: We used Cloud Build to automate the building and deployment of our Docker images.
+5. Cloud run: We used Cloud run service to deploy our Frontend and Backend APIs in a serverless environment.
+6. Vertex AI: [...].
+7. Monitoring: [...]
 
 ### Question 18
 
@@ -419,7 +426,7 @@ We debugged our experiments using a hybrid approach. Using the VS Code debugger,
 >
 > Answer:
 
---- question 20 fill here ---
+![Artifact registry](figures/ArtifactRegistry.png)
 
 ### Question 21
 
@@ -428,7 +435,7 @@ We debugged our experiments using a hybrid approach. Using the VS Code debugger,
 >
 > Answer:
 
---- question 21 fill here ---
+![Cloud build history](figures/CloudBuild.png)
 
 ### Question 22
 
@@ -541,7 +548,7 @@ We debugged our experiments using a hybrid approach. Using the VS Code debugger,
 >
 > Answer:
 
---- question 28 fill here ---
+Our project was focused towards deploying an AI application that a user could interact with. Of course, no everyone is comfortable using APIs directly, so instead we created a user-friendly frontend using Streamlit, and customized it with html generated with the help of [Google Stitch](https://stitch.withgoogle.com/), which created a minimalistic but modern design. This html was then integrated into our Streamlit app with the help of the html() function and a frontend_utils.py file. The frontend simply takes a user image input, sends it to the backend API for inference and returns the prediction which is the displayed to the user. Feel free to [try it out](https://frontend-582302018737.europe-west1.run.app/) (The backend might take a minute to start after the first input is given).
 
 ### Question 29
 
