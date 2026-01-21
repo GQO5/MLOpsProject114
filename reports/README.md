@@ -232,7 +232,7 @@ In total, we implemented four tests. Our primary focus was unit testing our crit
 >
 > Answer:
 
-Wait, im going to add more test since they change the src?
+Our project has a total code coverage of 53%. However, this number is heavily skewed by auxiliary scripts. Our critical components, such as model.py, data.py, and train.py, have excellent coverage, with scores of 100%, 93%, and 91%, respectively. Utility files (e.g., tasks.py) and visualization scripts lowered the overall average. Even if we achieved 100% coverage, we could not trust the code to be error-free. Code coverage only measures which lines were executed during testing, not whether the logic is correct.
 
 ### Question 9
 
