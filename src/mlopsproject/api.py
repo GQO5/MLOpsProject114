@@ -10,12 +10,19 @@ from PIL import Image as PILImage
 
 app = FastAPI(title="Food Nutrients Prediction API")
 
-DEVICE = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
+DEVICE = (
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps" if torch.backends.mps.is_available() else "cpu"
+)
 
 # TODO: These should be loaded from the trained model metadata
 Y_MEAN = np.array([253.70776, 12.700077, 19.36578, 17.732618], dtype=np.float32)
 Y_STD = np.array([219.31146, 13.548113, 22.665058, 19.38393], dtype=np.float32)
-MODEL_PATH = os.environ.get("MODEL_PATH", "models/model_20260118_135410_FT_True.pth") #Example model (update as needed)
+MODEL_PATH = os.environ.get(
+    "MODEL_PATH", "models/model_20260118_135410_FT_True.pth"
+)  # Example model (update as needed)
+
 
 # Function to unscale predictions
 def unscale(y_scaled: torch.Tensor) -> torch.Tensor:
@@ -55,6 +62,7 @@ def load_model_on_startup():
 def health():
     return {"status": "ok", "device": DEVICE, "model_path": MODEL_PATH}
 
+
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     # 1) read image bytes
@@ -79,4 +87,3 @@ async def predict(file: UploadFile = File(...)):
         "total_carb": float(y[2]),
         "total_protein": float(y[3]),
     }
-
