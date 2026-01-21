@@ -113,15 +113,10 @@ ignore = ["I001"]
 [tool.coverage.run]
 omit = [
   "tests/*",
-  "tmp/*"
+  "tmp/*",
+  "*/_remote_module_non_scriptable.py"
 ]
 
-[tool.coverage.run]
-omit = [
-    "tests/*",
-    "tmp/*",
-    "*/_remote_module_non_scriptable.py",  # Add this line
-]
 
 [dependency-groups]
 dev = [
