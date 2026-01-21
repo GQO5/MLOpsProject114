@@ -6,7 +6,7 @@ import torch.nn as nn
 from fastapi import FastAPI, File, UploadFile
 from torchvision import models, transforms
 from io import BytesIO
-from PIL import Image as PILImage 
+from PIL import Image as PILImage
 
 app = FastAPI(title="Food Nutrients Prediction API")
 
@@ -24,7 +24,7 @@ def unscale(y_scaled: torch.Tensor) -> torch.Tensor:
     return y_scaled * y_std_t + y_mean_t
 
 
-# Image preprocessing 
+# Image preprocessing
 IMG_TFM = transforms.Compose(
     [
         transforms.Resize((224, 224)),
