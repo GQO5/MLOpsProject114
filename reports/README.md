@@ -69,7 +69,7 @@ will check the repositories and the code to verify your answers.
 * [X] Write one or multiple configurations files for your experiments (M11)
 * [X] Used Hydra to load the configurations and manage your hyperparameters (M11)
 * [ ] Use profiling to optimize your code (M12)
-* [ ] Use logging to log important events in your code (M14)
+* [X] Use logging to log important events in your code (M14)
 * [X] Use Weights & Biases to log training progress and other important metrics/artifacts in your code (M14)
 * [X] Consider running a hyperparameter optimization sweep (M14)
 * [ ] Use PyTorch-lightning (if applicable) to reduce the amount of boilerplate in your code (M15)
@@ -80,9 +80,9 @@ will check the repositories and the code to verify your answers.
 * [X] Write unit tests related to model construction and or model training (M16)
 * [ ] Calculate the code coverage (M16)
 * [X] Get some continuous integration running on the GitHub repository (M17)
-* [ ] Add caching and multi-os/python/pytorch testing to your continuous integration (M17)
+* [X] Add caching and multi-os/python/pytorch testing to your continuous integration (M17)
 * [X] Add a linting step to your continuous integration (M17)
-* [ ] Add pre-commit hooks to your version control setup (M18)
+* [X] Add pre-commit hooks to your version control setup (M18)
 * [ ] Add a continues workflow that triggers when data changes (M19)
 * [ ] Add a continues workflow that triggers when changes to the model registry is made (M19)
 * [X] Create a data storage in GCP Bucket for your data and link this with your data version control setup (M21)
@@ -90,7 +90,7 @@ will check the repositories and the code to verify your answers.
 * [ ] Get your model training in GCP using either the Engine or Vertex AI (M21)
 * [X] Create a FastAPI application that can do inference using your model (M22)
 * [X] Deploy your model in GCP using either Functions or Run as the backend (M23)
-* [ ] Write API tests for your application and setup continues integration for these (M24)
+* [X] Write API tests for your application and setup continues integration for these (M24)
 * [X] Load test your application (M24)
 * [X] Create a more specialized ML-deployment API using either ONNX or BentoML, or both (M25)
 * [X] Create a frontend for your API (M26)
@@ -416,8 +416,10 @@ For our project, we utilized several GCP services:
 > **You can take inspiration from [this figure](figures/bucket.png).**
 >
 > Answer:
+> 
+![Bucket1](figures/Bucket1.png)
 
---- question 19 fill here ---
+![Bucket2](figures/Bucket2.png)
 
 ### Question 20
 
@@ -467,7 +469,7 @@ For our project, we utilized several GCP services:
 >
 > Answer:
 
---- question 23 fill here ---
+We did write APIs for our model using both FastAPI, as well as a more specialized version using BentoML. Both do the exact same thing, on startup they load the model, and serve a /predict endpoint that takes an image and returns the prediction from our model. In order to output the correct predictions, an extra function had to be added called unscale(), which takes the raw, scaled outputs from the model and converts them back to the original scaled making used of the mean and std values used during preprocessing. In this case, both APIs have been containerized and deployed to GCP Cloud Run, but our frontend only interacts with the one specified in the Environment Variable called "BACKEND", which takes the path to the [backend url](https://backend-582302018737.europe-west1.run.app).
 
 ### Question 24
 
@@ -483,7 +485,7 @@ For our project, we utilized several GCP services:
 >
 > Answer:
 
---- question 24 fill here ---
+Firstly, we designed our APIs and frontend and made sure that they were able to communicate locally, using localhost addresses. Once we confirmed that it worked locally, we then built the docker images for each part of the application and again, tested that they were able to interact, sending requests and visualizing the results in the frontend. Once that was confirmed, we then pushed the images to GCP Artifact Registry, and deployed them to Cloud run manually for the first time. This was the last check to confirm that everything worked as intended. Finally, a CD pipeline was created. The idea was to create a GCP trigger that automatically build, pushed and deployed the frontend and backend when new code was pushed to main. However, not every push to main contains changes to these, so a github action was created which detects individual changes to either the front, back, or both. Once a change is detected, a job is executed, which does the build, push and deploy steps automatically. This allows deploying only when necessary. To invoke the service, a user would simply navigate to the frontend url (https://frontend-582302018737.europe-west1.run.app/) and upload an image.
 
 ### Question 25
 
@@ -498,7 +500,7 @@ For our project, we utilized several GCP services:
 >
 > Answer:
 
---- question 25 fill here ---
+Yes, we performed both unit testing and load testing of our BentoML API. For unit testing, we used Pytest to create a simple test that generates a dummy image, posts it to the /predict endpoint, and checks the response status code and that the correct keys are present in the response, as well as their value types. For load testing, we used Locust to simulate users accessing our front end "/" endpoint, as well as posting images to the "/predict" endpoint from the backend. This process was simplified by creating a task using invoke, load_test_backend and load_test_frontend, where you can specify different parameters to control the load test. The results showed that for a test of 200 users with a spawn rate of 30 users/s for 1 minute, the backend was able to handle the load with an average response time of 1500ms, 68.98 req/s, and a failure rate of 11%, mostly caused by "POST /predict: HTTPError('503 Server Error: Service Unavailable for url: /predict')". Most probably, those failures were due to the cold start of a second instance that had to be created due to the high load.
 
 ### Question 26
 
