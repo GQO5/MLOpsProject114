@@ -2,7 +2,7 @@ name: Data Drift Check
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, feature/DataDrifting ]
   pull_request:
   workflow_dispatch:       
 
