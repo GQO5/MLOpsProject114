@@ -6,6 +6,8 @@ import torch.nn as nn
 from fastapi import FastAPI, File, UploadFile
 from torchvision import models, transforms
 from io import BytesIO
+from google.cloud import storage
+
 from PIL import Image as PILImage
 
 app = FastAPI(title="Food Nutrients Prediction API")
@@ -18,6 +20,25 @@ Y_STD = np.array([219.31146, 13.548113, 22.665058, 19.38393], dtype=np.float32)
 MODEL_PATH = os.environ.get(
     "MODEL_PATH", "models/model_20260118_135410_FT_True.pth"
 )  # Example model (update as needed)
+
+# Support for GCS paths
+MODEL_GCS_URI = os.environ.get("MODEL_GCS_URI")  # e.g. gs://group114-bucket/models/final_model.pth
+def download_from_gcs(gcs_uri: str, dst_path: str) -> None:
+    """
+    Provisional helper: download a model file from GCS.
+    Expected gcs_uri format: gs://bucket-name/path/to/file.pth
+    """
+    if not gcs_uri.startswith("gs://"):
+        raise ValueError(f"Invalid GCS URI: {gcs_uri}")
+
+    no_scheme = gcs_uri[len("gs://") :]
+    bucket_name, blob_path = no_scheme.split("/", 1)
+
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(blob_path)
+    blob.download_to_filename(dst_path) 
+
 
 
 # Function to unscale predictions
@@ -41,6 +62,18 @@ TARGET_COLS = ["total_calories", "total_fat", "total_carb", "total_protein"]
 
 @app.on_event("startup")
 def load_model_on_startup():
+    
+    model_path = MODEL_PATH
+    # Download model from GCS if needed 
+    # Provisional: if a GCS URI is provided, download it to /tmp and use that file.
+    if MODEL_GCS_URI:
+        tmp_path = "/tmp/model.pth"
+        print(f"Downloading model from GCS: {MODEL_GCS_URI} -> {tmp_path}")
+        download_from_gcs(MODEL_GCS_URI, tmp_path)
+        model_path = tmp_path   
+
+        state = torch.load(model_path, map_location=DEVICE)
+
     # Load model weights once
     state = torch.load(MODEL_PATH, map_location=DEVICE)
 
