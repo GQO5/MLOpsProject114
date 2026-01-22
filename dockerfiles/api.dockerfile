@@ -5,12 +5,20 @@ RUN apt update && \
     apt clean && rm -rf /var/lib/apt/lists/*
 
 COPY src src/
-COPY requirements.txt requirements.txt
-COPY requirements_dev.txt requirements_dev.txt
+COPY requirements_api.txt requirements_api.txt
 COPY README.md README.md
 COPY pyproject.toml pyproject.toml
 
-RUN pip install -r requirements.txt --no-cache-dir --verbose
-RUN pip install . --no-deps --no-cache-dir --verbose
+RUN pip install --no-cache-dir --upgrade pip
 
-ENTRYPOINT ["uvicorn", "src.mlopsproject.api:app", "--host", "0.0.0.0", "--port", "8000"]
+# Install CPU-only PyTorch wheels
+RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch torchvision
+
+# Install API runtime deps
+RUN pip install --no-cache-dir -r requirements_api.txt
+
+# Install code 
+RUN pip install --no-cache-dir --verbose . --no-deps
+
+
+ENTRYPOINT ["sh", "-c", "uvicorn src.mlopsproject.api:app --host 0.0.0.0 --port ${PORT:-8080}"]
