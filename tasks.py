@@ -191,3 +191,18 @@ def build_docs(ctx: Context) -> None:
 def serve_docs(ctx: Context) -> None:
     """Serve documentation."""
     ctx.run("mkdocs serve --config-file docs/mkdocs.yaml", echo=True, pty=not WINDOWS)
+
+
+
+@task
+def check_drift(ctx: Context, model_path="") -> None:
+    """
+    Run robustness check. Auto-finds latest model if path not provided.
+    Usage: invoke check-drift
+           invoke check-drift --model-path=models/my_specific_model.pth
+    """
+    cmd = f"python src/{PROJECT_NAME}/data_drifting.py"
+    if model_path:
+        cmd += f" --model_path {model_path}"
+        
+    ctx.run(cmd, echo=True, pty=not WINDOWS)

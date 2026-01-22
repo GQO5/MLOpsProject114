@@ -1,0 +1,59 @@
+name: Data Drift Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  robustness-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        # "uv sync" automatically installs dependencies from pyproject.toml
+        run: uv sync --all-extras --dev
+
+      - name: Pull Data (DVC)
+        shell: bash
+        env:
+          # Loads your specific secret into an environment variable
+          GCS_KEY_CONTENT: ${{ secrets.GCS_DOCKER_IMAGES_KEY }}
+        run: |
+          # 1. Write the secret content to a temporary JSON file
+          echo "$GCS_KEY_CONTENT" > gcs_key.json
+          
+          # 2. Configure DVC to use this key file locally
+          # 'storage' must match the remote name in your .dvc/config file
+          uv run dvc remote modify --local storage credentialpath gcs_key.json
+          
+          # 3. Pull the data
+          uv run dvc pull
+          
+          # 4. Cleanup: Remove the key file for security
+          rm gcs_key.json
+
+      - name: Preprocess Data
+        run: uv run invoke preprocess-data
+
+      - name: Run Drift Check
+        run: uv run invoke check-drift
+      
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        if: always() 
+        with:
+          name: drift-report
+          path: reports/data_drift_robustness.txt

@@ -39,6 +39,8 @@ dependencies = [
   "mypy[dev]>=1.19.1",
   "loguru>=0.7.3",
   "markdown>=3.10",
+  "omegaconf>=2.3.0",
+  "google-cloud-storage>=3.8.0",
 ]
 [project.optional-dependencies]
 dev = [
