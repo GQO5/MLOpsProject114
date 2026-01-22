@@ -5,3 +5,4 @@ torchvision
 pillow
 numpy
 google-cloud-storage
+python-multipart
