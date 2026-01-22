@@ -1,5 +1,4 @@
 import os
-
 import torch
 import numpy as np
 import torch.nn as nn
@@ -62,7 +61,7 @@ TARGET_COLS = ["total_calories", "total_fat", "total_carb", "total_protein"]
 
 @app.on_event("startup")
 def load_model_on_startup():
-    
+
     model_path = MODEL_PATH
     # Download model from GCS if needed 
     # Provisional: if a GCS URI is provided, download it to /tmp and use that file.
@@ -72,10 +71,8 @@ def load_model_on_startup():
         download_from_gcs(MODEL_GCS_URI, tmp_path)
         model_path = tmp_path   
 
-        state = torch.load(model_path, map_location=DEVICE)
-
     # Load model weights once
-    state = torch.load(MODEL_PATH, map_location=DEVICE)
+    state = torch.load(model_path, map_location=DEVICE)
 
     model = models.resnet50(weights=None, num_classes=len(TARGET_COLS))
     in_features = model.fc.in_features
@@ -89,7 +86,13 @@ def load_model_on_startup():
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "device": DEVICE, "model_path": MODEL_PATH}
+    return {
+        "status": "ok",
+        "device": DEVICE,
+        "model_path": MODEL_PATH,
+        "model_gcs_uri": MODEL_GCS_URI,
+    }
+
 
 
 @app.post("/predict")
