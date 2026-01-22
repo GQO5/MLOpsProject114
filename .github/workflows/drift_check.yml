@@ -25,7 +25,7 @@ jobs:
 
       - name: Install dependencies
         # "uv sync" automatically installs dependencies from pyproject.toml
-        run: uv sync --all-extras --dev
+        run: uv sync --extra cpu
 
       - name: Pull Data (DVC)
         shell: bash
