@@ -3,6 +3,9 @@ docs/site/
 # W&B runs
 wandb/
 
+#reports
+reports/
+
 # Models 
 models/ 
 
