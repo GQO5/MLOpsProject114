@@ -392,7 +392,7 @@ For our project, we utilized several GCP services:
 3. Artifact Registry: We used Artifact Registry to store and manage our Docker images. This service allowed us to easily deploy our containerized applications.
 4. Cloud Build: We used Cloud Build to automate the building and deployment of our Docker images.
 5. Cloud run: We used Cloud run service to deploy our Frontend and Backend APIs in a serverless environment.
-6. Vertex AI: [...].
+6. Vertex AI: We used Vertex AI to run custom training jobs in the cloud using our containerized training pipeline. 
 7. Monitoring: [...]
 
 ### Question 18
