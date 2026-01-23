@@ -60,8 +60,8 @@ will check the repositories and the code to verify your answers.
 * [X] Add a model to `model.py` and a training procedure to `train.py` and get that running (M6)
 * [X] Remember to either fill out the `requirements.txt`/`requirements_dev.txt` files or keeping your
     `pyproject.toml`/`uv.lock` up-to-date with whatever dependencies that you are using (M2+M6)
-* [ ] Remember to comply with good coding practices (`pep8`) while doing the project (M7)
-* [ ] Do a bit of code typing and remember to document essential parts of your code (M7)
+* [X] Remember to comply with good coding practices (`pep8`) while doing the project (M7)
+* [X] Do a bit of code typing and remember to document essential parts of your code (M7)
 * [X] Setup version control for your data or part of your data (M8)
 * [ ] Add command line interfaces and project commands to your code where it makes sense (M9)
 * [X] Construct one or multiple docker files for your code (M10)
@@ -78,13 +78,13 @@ will check the repositories and the code to verify your answers.
 
 * [X] Write unit tests related to the data part of your code (M16)
 * [X] Write unit tests related to model construction and or model training (M16)
-* [ ] Calculate the code coverage (M16)
+* [X] Calculate the code coverage (M16)
 * [X] Get some continuous integration running on the GitHub repository (M17)
 * [X] Add caching and multi-os/python/pytorch testing to your continuous integration (M17)
 * [X] Add a linting step to your continuous integration (M17)
 * [X] Add pre-commit hooks to your version control setup (M18)
 * [ ] Add a continues workflow that triggers when data changes (M19)
-* [ ] Add a continues workflow that triggers when changes to the model registry is made (M19)
+* [X] Add a continues workflow that triggers when changes to the model registry is made (M19)
 * [X] Create a data storage in GCP Bucket for your data and link this with your data version control setup (M21)
 * [X] Create a trigger workflow for automatically building your docker images (M21)
 * [X] Get your model training in GCP using either the Engine or Vertex AI (M21)
@@ -97,9 +97,9 @@ will check the repositories and the code to verify your answers.
 
 ### Week 3
 
-* [ ] Check how robust your model is towards data drifting (M27)
-* [ ] Setup collection of input-output data from your deployed application (M27)
-* [ ] Deploy to the cloud a drift detection API (M27)
+* [X] Check how robust your model is towards data drifting (M27)
+* [X] Setup collection of input-output data from your deployed application (M27)
+* [X] Deploy to the cloud a drift detection API (M27)
 * [ ] Instrument your API with a couple of system metrics (M28)
 * [ ] Setup cloud monitoring of your instrumented application (M28)
 * [X] Create one or more alert systems in GCP to alert you if your app is not behaving correctly (M28)
@@ -112,7 +112,7 @@ will check the repositories and the code to verify your answers.
 * [ ] Write some documentation for your application (M32)
 * [ ] Publish the documentation to GitHub Pages (M32)
 * [X] Revisit your initial project description. Did the project turn out as you wanted?
-* [ ] Create an architectural diagram over your MLOps pipeline
+* [X] Create an architectural diagram over your MLOps pipeline
 * [X] Make sure all group members have an understanding about all parts of the project
 * [X] Uploaded all your code to GitHub
 
@@ -148,7 +148,7 @@ s253733, s253814, s252802, s253695, s252668
 >
 > Answer:
 
-Yes, we used Docker to enable consistent execution across local and cloud infrastructure. We also used Hydra for configuration management, allowing a clear separation of environment-specific and experiment-specific parameters, and Invoke to standardize development and training commands. For code quality, we adopted Ruff, which replaced multiple tools such as Flake8, Isort, and Black due to its superior speed. Additionally, we used Uv for dependency management, which significantly reduced environment setup time compared to Pip or Conda.
+Initially, we planned on using GradIO as the framework for our frontend. However, we later discovered that streamlit was covered in the course and decided to stick to it. At the end, we did not use any open-source frameworks/packages not covered in the course, but instead focused on using the provided tools throughout the course, as we believe they were sufficient for completing our project.
 
 ## Coding environment
 
@@ -168,7 +168,7 @@ Yes, we used Docker to enable consistent execution across local and cloud infras
 >
 > Answer:
 
-We used Uv to manage our dependencies because it's the latest industry trend. We defined our project requirements in a PyProject.toml file. To obtain a complete copy of our development environment, someone who has Uv installed must run the command "uv sync."
+We used Uv to manage our dependencies because it's the latest industry trend. We defined our project requirements in a PyProject.toml file. To obtain a complete copy of our development environment, someone who has Uv installed must run the command "uv sync" or "uv sync --extra dev" to include development dependencies. UV also caused some trouble when installing pytorch, especially when it comes to the CPU or GPU version. Based on the uv documentation regarding pytorch, modifying the .toml file to allow for choosing between the two versions was pretty straightforward, adding the appropriate context in the file and use "uv sync --extra cu128" for CUDA 12.8.
 ### Question 5
 
 > **We expect that you initialized your project using the cookiecutter template. Explain the overall structure of your**
@@ -183,7 +183,7 @@ We used Uv to manage our dependencies because it's the latest industry trend. We
 >
 > Answer:
 
-We initialized our project using the course-specific Cookiecutter template. We worked primarily within the "src" directory for our source code and the "configs" directory to manage hyperparameters with Hydra. We used the provided Dockerfiles folder for containerization and PyProject.toml for dependency management.
+We initialized our project using the course-specific Cookiecutter template. We worked primarily within the "src" directory for our source code and the "configs" directory to manage hyperparameters with Hydra. We used the provided Dockerfiles folder for containerization and PyProject.toml for dependency management. Additionally, inside src/mlopsproject, two folders were created to separate the frontend and backend (BentoML) code from the main model training and data handling code. We also added a performancetests/ and unittests/ inside of tests/ to better organize our tests.
 
 ### Question 6
 
@@ -198,7 +198,7 @@ We initialized our project using the course-specific Cookiecutter template. We w
 >
 > Answer:
 
-We implemented code quality and formatting rules using Ruff as our linter and formatter. We automated this process using GitHub Actions to ensure that all code pushed to the repository aligns to PEP 8 standards. 
+We implemented code quality and formatting rules using Ruff as our linter and formatter. We automated this process using GitHub Actions to ensure that all code pushed to the repository aligns to PEP 8 standards. Additionally, we incorporated pre-commit hooks to enforce these standards before any code is committed. Having a consistent code style is crucial in large projects, as it facilitates readability and maintainability, and the use of typing can help catch potential bugs early and also serves as documentation for function inputs and outputs. Combining all this with proper docstrings and comments ensures that someone who has never seen the code before can quickly understand its purpose and functionality.
 
 ## Version control
 
@@ -217,7 +217,7 @@ We implemented code quality and formatting rules using Ruff as our linter and fo
 >
 > Answer:
 
-In total, we implemented four tests. Our primary focus was unit testing our critical components. For example, test_data.py verifies that our data loaders return the correct types and shapes of data. Meanwhile, test_model.py confirms that our model architecture processes inputs and produces outputs with the expected dimensions. We also implemented integration tests (test_integration.py) to ensure that the entire training pipeline runs without crashing from start to finish. 
+In total, we implemented six tests. Our primary focus was unit testing our critical components. For example, test_data.py verifies that our data loaders return the correct types and shapes of data. Meanwhile, test_model.py confirms that our model architecture processes inputs and produces outputs with the expected dimensions. We also implemented integration tests (test_integration.py) to ensure that the entire training pipeline runs without crashing from start to finish. From the API side, we created a bentoml service test to validate the /predict endpoint, ensuring it returns the correct response structure and types when provided with an input image. Additionally, load testing scripts were created to simulate multiple users accessing and using our API simultaneously.
 
 ### Question 8
 
@@ -288,7 +288,7 @@ Testing: The tests.yaml workflow runs our Pytest suite to verify the unit and in
 CML and MLOps Automation:
 We implemented an event-driven CML_MODEL.YAML workflow that is triggered by a repository_dispatch signal from our model registry. This integration uses CML to automatically generate and post a Markdown report (model_report.md) as a comment on the repository whenever a new model version is registered. This ensures automated visibility for model updates.
 
-Deployment: We use Google Cloud Build, as defined in backendbuild.yaml, for containerization. This pipeline builds our Docker image (backend:latest) and pushes it to the Artifact Registry using the gcr.io/cloud-builders/docker builder.
+Deployment: We use Google Cloud Build, as defined in backendbuild.yaml and build_push_deploy_app.yaml, for containerization, in combination with docker. This pipeline builds our Docker images (backend:latest and frontend:latest), pushes them to the Artifact Registry and deploys them in Cloud Run. Here is an example of this specific workflow: https://github.com/GQO5/MLOpsProject114/blob/main/.github/workflows/build_push_deploy_app.yaml
 
 ## Running code and tracking experiments
 
@@ -322,7 +322,7 @@ We used Hydra to handle our training hyperparameters. Inside configs/, we create
 >
 > Answer:
 
-We ensured reproducibility by strictly decoupling the configuration from the code using Hydra, and including a seed to ensure consistent results. One can set the seed_run parameter in configs/run.yaml. We use Weights & Biases (WandB) to automatically log the hyperparameters and resulting metrics used whenever an experiment is run. Whenever an experiment is started, the program's entry point is at src/mlopsproject/run.py, where we load our experiment configuration using Hydra and instantiate the necessary components to start the training process, taking advantage of a dependency injection pattern, which makes it very easy to swap components, such as different datasets, models, trainers, or loggers if needed.
+We ensured reproducibility by strictly decoupling the configuration from the code using Hydra, and including a seed to ensure consistent results. One can set the seed_run parameter in configs/run.yaml. We use Weights & Biases (WandB) to automatically log the hyperparameters and resulting metrics used whenever an experiment is run. Whenever an experiment is started, the program's entry point is at src/mlopsproject/run.py, where we load our experiment configuration using Hydra and instantiate the necessary components to start the training process, taking advantage of a dependency injection pattern, which makes it very easy to swap components, such as different datasets, models, trainers, or loggers if needed. In our case, only the trainer is configurable.
 
 ### Question 14
 
@@ -339,7 +339,10 @@ We ensured reproducibility by strictly decoupling the configuration from the cod
 >
 > Answer:
 
---- question 14 fill here ---
+![WandB](figures/wandb.png)
+![WandB1](figures/wandb1.png)
+
+As seen in the images above, we tracked several of our metrics in Weights & Biases (WandB) to monitor our training experiments. The primary metrics we tracked were training loss and validation loss, which are crucial for understanding how well our model is learning from the data. A decreasing training loss indicates that the model is fitting the training data, while the validation loss helps us assess how well the model generalizes to unseen data. Making use of wandbs sweep functionality helped us perform hyperparameter optimization. Additionally, other metrics like MAE and and R2 score were tracked to understand how well the model performed in terms of the individual predictions, which were total calories, protein, fat and carbohydrates, based on a given image. 
 
 ### Question 15
 
@@ -388,12 +391,12 @@ We debugged our experiments using a hybrid approach. Using the VS Code debugger,
 
 For our project, we utilized several GCP services:
 1. Compute Engine: We used Compute Engine to create virtual machines (VMs) for training our machine learning models. This service provided us with scalable computing resources, allowing us to choose VM types that matched our computational needs.
-2. Cloud Storage (GCP Bucket): We used Cloud Storage to store our dataset.
+2. Cloud Storage (GCP Bucket): We used Cloud Storage to store our dataset, and API data collection for drift detection.
 3. Artifact Registry: We used Artifact Registry to store and manage our Docker images. This service allowed us to easily deploy our containerized applications.
-4. Cloud Build: We used Cloud Build to automate the building and deployment of our Docker images.
+4. Cloud Build: We used Cloud Build to automate the building of our Docker images.
 5. Cloud run: We used Cloud run service to deploy our Frontend and Backend APIs in a serverless environment.
-6. Vertex AI: [...].
-7. Monitoring: [...]
+6. Vertex AI: We used Vertex AI to train our machine learning models in the cloud.
+7. Monitoring: We used GCP Monitoring to set up alerts and monitor the performance of our deployed applications.
 
 ### Question 18
 
@@ -408,7 +411,7 @@ For our project, we utilized several GCP services:
 >
 > Answer:
 
---- question 18 fill here ---
+In our case, we did not directly use Compute Engine instances for this project, but rather Cloud Run for deploying our APIs and Vertex AI for training our models. In our case, 2 Cloud run instances were created, one with a default configuration for the frontend, as the UI is really simple and not computationally intensive. The backend instance required more resources, firstly because it firstly gave errors regarding memory limits, and secondly because it had to do inference of our model. So, the backend was configured with a single NVIDIA L4 GPU, 16GiB of memory and 4 vCPUs.
 
 ### Question 19
 
@@ -586,7 +589,7 @@ Once everything is deployed, our users can access our UI and upload dish images 
 >
 > Answer:
 
---- question 30 fill here ---
+One of the biggest challenges we faced during the project was setting up and configuring the cloud infrastructure, particularly with GCP services like Cloud Run and Vertex AI, as we were experiencing role errors related to permissions and access controls with the service account. Initially, we also struggled with understanding how to properly containerize our applications using Docker and ensuring that all dependencies were correctly included in the Dockerfiles. To overcome this, we dedicated time to studying Docker documentation and experimenting with different configurations until we achieved a working setup. Uv was a new tool for all of us, and working through dependency resolution issues, especially with packages like PyTorch, took a significant amount of time, but lucky for us, uv has a great documentatin page that helped us resolve these issues. Lastly, github actions also took us some time to get right, as we were always having errors when running our tests on different python versions and operating systems. We overcame this by dedicating several hours on understanding the errors, making adjustments to the workflow files, consulting online, and many trial-and-error attempts until we achieved a stable CI/CD pipeline.
 
 ### Question 31
 
@@ -604,8 +607,6 @@ Once everything is deployed, our users can access our UI and upload dish images 
 > *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
 > Answer:
 
---- question 31 fill here ---
-
 Student s252802 was in charge of setting up the project structure using Cookiecutter, managing the GitHub repository, and writing the Dockerfiles for train. Also, implemented the testing framework (including code coverage) and developed the data drift detection pipeline to monitor model performance
 
 Student s253814 was in charge of setting up the initial framework for training the model and making a series of invoke tasks to prepare the data and train the model. Also handled setting up the Google Cloud Storage bucket for our dataset, integrating it with DVC for version-controlled data storage, and configuring the Vertex AI custom jobs to run our training container while ensuring results were logged to Weights & Biases for tracking. Added number of workers and possibility to allocate memory in pinned memory, for faster CPU->GPU data transfer. Also used GitHub Copilot with Grok Code Fast 1 to assist with complex error messages and compatibility issues between packages
@@ -614,7 +615,7 @@ Student s253733 was responsible for developing the data loading pipeline, as wel
 
 Student s253814 firstly worked on setting up the team's GCP environment, configuring service accounts, requesting a GPU, and setting permissions. Incorporated Hydra on top of the initial training pipeline to manage hyperparameters and configurations following a dependency injection pattern. Also, designed and implemented the Frontend using Streamlit and integrated it with BentoML Backend API, together with their corresponding load testing scripts using Locust and a backend unittest using Pytest. Lastly, automated the build, pushing, and deployment of both Frontend and Backend (BentoML) using GCP Cloud and GitHub Actions only when specific files are changed on a push to main.
 
-All members...
+All members contributed to code by reviewing pull requests, testing features, debugging issues collaboratively, as well as sharing knowledge among the team.
 
 In preparing this work, we used large language models (LLMs), such as ChatGPT, to help with
 aspects of writing, coding, and creating a figures. Specifically, we used generative AI tools to paraphrase

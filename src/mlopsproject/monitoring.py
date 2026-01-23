@@ -42,7 +42,7 @@ def save_to_gcs(image_bytes: bytes, pred_result: dict):
 
 def load_recent_data_from_gcs(bucket_name: str, days: int = 7) -> pd.DataFrame:
     """
-    Connects to GCS, finds all JSONs from the last 'days', 
+    Connects to GCS, finds all JSONs from the last 'days',
     and returns them as a Pandas DataFrame.
     """
     try:
