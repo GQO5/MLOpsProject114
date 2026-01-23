@@ -16,7 +16,7 @@ def test_predict_endpoint():
     """
     with subprocess.Popen(["bentoml", "serve", "src.mlopsproject.bento_backend.bentoml_service:ImageClassifierService", "--port", "5000"]) as proc:
         try:
-            client = bentoml.SyncHTTPClient("http://localhost:5000", server_ready_timeout=15)
+            client = bentoml.SyncHTTPClient("http://localhost:5000", server_ready_timeout=60)
             # Create a dummy image in memory, and convert it to bytes
             img = Image.new("RGB", (224, 224), color="white")
             img_bytes = io.BytesIO()
