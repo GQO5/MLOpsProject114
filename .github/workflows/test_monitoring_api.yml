@@ -53,7 +53,7 @@ jobs:
         run: |
           # 1. Start the API in the background using 'nohup'
           # We redirect logs to server.log so we can debug if it fails
-          nohup uv run uvicorn app:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
+          nohup uv run uvicorn src.mlopsproject.api:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
           
           # 2. Wait 10 seconds for the server to boot up
           echo "Waiting for API to start..."
