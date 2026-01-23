@@ -603,7 +603,7 @@ Our project was focused towards deploying an AI application that a user could in
 
 
 
-
+Student s252802 was in charge of setting up the initial project structure using Cookiecutter, managing the GitHub repository, and writing the Dockerfiles for train.Also, implemented the testing framework (including code coverage) and developed the data drift detection pipeline to monitor model performance
 
 
 
