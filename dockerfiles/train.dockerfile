@@ -1,6 +1,9 @@
 # ==========================================
-# 1. Base Image (Official UV image)
+# 1. Base Image (PyTorch with CUDA support)
 # ==========================================
+# FROM pytorch/pytorch:2.4.0-cuda12.1-cudnn9-runtime  # Use this for GPU
+
+# CPU-only base image
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
 # ==========================================
@@ -14,9 +17,10 @@ WORKDIR /app
 # ==========================================
 # 3. System Dependencies
 # ==========================================
-# We include gcc because 'setuptools' in pyproject.toml might need to compile things
+# Install UV and other dependencies
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc build-essential git && \
+    apt-get install -y --no-install-recommends gcc build-essential git curl && \
+    curl -LsSf https://astral.sh/uv/install.sh | sh && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ==========================================
