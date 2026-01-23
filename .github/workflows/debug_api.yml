@@ -3,7 +3,7 @@ name: Debug API Crash
 on:
   push:
     branches: [ main, feature/DataDrifting ]
-  workflow_dispatch: # Allows you to click "Run" manually in GitHub
+  workflow_dispatch:
 
 jobs:
   debug-startup:
@@ -23,7 +23,6 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        # We explicitly add the monitoring libraries here to be safe
         run: |
           uv sync --extra cpu
           uv add evidently pandas fastjson
@@ -36,38 +35,21 @@ jobs:
           echo "$GCS_KEY_CONTENT" > gcs_key.json
           uv run dvc remote modify --local storage credentialpath gcs_key.json
           uv run dvc pull
-      
-      # --- DEBUGGING STEPS START HERE ---
-      
-      - name: 🔍 Debug - File System Check
-        run: |
-          echo "Listing 'models' directory:"
-          ls -R models/ || echo "Models directory not found!"
-          
-          echo "Listing root directory:"
-          ls -la
 
-      - name: 🔍 Debug - Dependency Check
+      - name: 🔍 Debug - Verify Model Exists
         run: |
-          echo "Checking installed packages:"
-          uv pip list | grep -E "evidently|pandas|fastapi|uvicorn"
+          echo "Listing models directory (Check if filename matches MODEL_PATH):"
+          ls -R models/
 
       - name: 💥 Nuclear Start - Force Error to Show
         env:
           ENABLE_DATA_COLLECTION: "True"
           GCS_BUCKET_NAME: "group114-bucket"
           GOOGLE_APPLICATION_CREDENTIALS: "gcs_key.json"
-          # UPDATE THIS IF YOUR LS COMMAND SHOWS A DIFFERENT FILENAME
-          MODEL_PATH: "models/model_20260118_135410_FT_True.pth" 
+          # CRITICAL: Ensure this filename matches exactly what 'ls -R models/' outputs above!
+          MODEL_PATH: "models/model_20260118_135410_FT_True.pth"
+          PYTHONPATH: "."  # <--- CRITICAL FIX 1: Helps Python find 'src'
         run: |
-          echo "Attempting to start API in foreground (5s timeout)..."
-          
-          # This runs the app directly. If it crashes, the error prints HERE.
-          # 'timeout' stops it after 10s so the job doesn't hang forever.
-          timeout 10s uv run uvicorn app:app --host 0.0.0.0 --port 8000 || true
-          
-          echo "If you see a Python error above (Traceback), that is your fix."
-
-      - name: Cleanup
-        if: always()
-        run: rm -f gcs_key.json
+          echo "Attempting to start API..."
+          # CRITICAL FIX 2: Point to the correct module path 'src.mlopsproject.api:app'
+          timeout 10s uv run uvicorn src.mlopsproject.api:app --host 0.0.0.0 --port 8000 || true
