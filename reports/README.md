@@ -87,7 +87,7 @@ will check the repositories and the code to verify your answers.
 * [ ] Add a continues workflow that triggers when changes to the model registry is made (M19)
 * [X] Create a data storage in GCP Bucket for your data and link this with your data version control setup (M21)
 * [X] Create a trigger workflow for automatically building your docker images (M21)
-* [ ] Get your model training in GCP using either the Engine or Vertex AI (M21)
+* [X] Get your model training in GCP using either the Engine or Vertex AI (M21)
 * [X] Create a FastAPI application that can do inference using your model (M22)
 * [X] Deploy your model in GCP using either Functions or Run as the backend (M23)
 * [X] Write API tests for your application and setup continues integration for these (M24)
@@ -452,7 +452,7 @@ For our project, we utilized several GCP services:
 >
 > Answer:
 
---- question 22 fill here ---
+Yes, we successfully trained our model in the cloud using Vertex AI. We created a custom Docker image that includes our training code, dependencies, and scripts to pull data from Google Cloud Storage using DVC. The image runs the training process with Weights & Biases for logging metrics and artifacts. We submitted custom jobs via the gcloud CLI, specifying the container image and environment variables for W&B authentication. This setup allowed us to run reproducible training on scalable cloud infrastructure without local hardware limitations.
 
 ## Deployment
 
@@ -607,9 +607,11 @@ Once everything is deployed, our users can access our UI and upload dish images 
 
 --- question 31 fill here ---
 
+Student s252802 was in charge of setting up the project structure using Cookiecutter, managing the GitHub repository, and writing the Dockerfiles for train. Also, implemented the testing framework (including code coverage) and developed the data drift detection pipeline to monitor model performance
 
+Student s253814 was in charge of setting up the initial framework for training the model and making a series of invoke tasks to prepare the data and train the model. Also handled setting up the Google Cloud Storage bucket for our dataset, integrating it with DVC for version-controlled data storage, and configuring the Vertex AI custom jobs to run our training container while ensuring results were logged to Weights & Biases for tracking. Also used GitHub Copilot with Grok Code Fast 1 to assist with complex error messages and compatibility issues between packages
 
-Student s252802 was in charge of setting up the initial project structure using Cookiecutter, managing the GitHub repository, and writing the Dockerfiles for train.Also, implemented the testing framework (including code coverage) and developed the data drift detection pipeline to monitor model performance
+Student s
 
 Student s253814 firstly worked on setting up the team's GCP environment, configuring service accounts, requesting a GPU, and setting permissions. Incorporated Hydra on top of the initial training pipeline to manage hyperparameters and configurations following a dependency injection pattern. Also, designed and implemented the Frontend using Streamlit and integrated it with BentoML Backend API, together with their corresponding load testing scripts using Locust and a backend unittest using Pytest. Lastly, automated the build, pushing, and deployment of both Frontend and Backend (BentoML) using GCP Cloud and GitHub Actions only when specific files are changed on a push to main.
 
@@ -619,3 +621,4 @@ In preparing this work, we used large language models (LLMs), such as ChatGPT, t
 aspects of writing, coding, and creating a figures. Specifically, we used generative AI tools to paraphrase
 and refine text passages to improve clarity, readability, and adherence to academic style.  Additionally, LLMs helped verify code
 correctness and suggest modifications to improve computational efficiency and performance. 
+

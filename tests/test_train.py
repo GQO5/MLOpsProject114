@@ -4,7 +4,7 @@ import pytest
 import torch
 import torch.nn as nn
 
-from src.mlopsproject.model import MODEL_PATH, load_model
+from mlopsproject.model import MODEL_PATH, load_model
 
 
 # We skip the test if the weights file is missing (e.g., in GitHub Actions)
