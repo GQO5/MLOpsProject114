@@ -24,8 +24,8 @@ class DatasetConfig:
     split: str = "train"  # train / val / test
     image_size: int = 224
     batch_size: int = 32
-    num_workers: int = 2
-    pin_memory: bool = True
+    num_workers: int = 4  # Optimized for CPU (M29)
+    pin_memory: bool = False  # Only True for GPU (M29)
     shuffle: bool = True  # should be True for train, False for val/test
 
     normalize_targets: bool = True
@@ -139,7 +139,7 @@ class FoodNutrientsDataset(Dataset):
 
 
 def make_dataloader(cfg: DatasetConfig) -> DataLoader:
-    """Factory for DataLoader."""
+    "Factory for DataLoader for CPU"
     transform = T.Compose(
         [
             T.Resize((cfg.image_size, cfg.image_size)),
@@ -160,8 +160,8 @@ def make_dataloader(cfg: DatasetConfig) -> DataLoader:
         ds,
         batch_size=cfg.batch_size,
         shuffle=cfg.shuffle,
-        num_workers=cfg.num_workers,
-        pin_memory=cfg.pin_memory,
+        num_workers=cfg.num_workers,  # M29: >0 for CPU parallel loading
+        pin_memory=cfg.pin_memory,    # M29: False for CPU
         drop_last=False,
     )
     return dl

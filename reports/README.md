@@ -603,7 +603,7 @@ Our project was focused towards deploying an AI application that a user could in
 
 Student s252802 was in charge of setting up the project structure using Cookiecutter, managing the GitHub repository, and writing the Dockerfiles for train. Also, implemented the testing framework (including code coverage) and developed the data drift detection pipeline to monitor model performance
 
-Student s253814 was in charge of setting up the initial framework for training the model and making a series of invoke tasks to prepare the data and train the model. Also handled setting up the Google Cloud Storage bucket for our dataset, integrating it with DVC for version-controlled data storage, and configuring the Vertex AI custom jobs to run our training container while ensuring results were logged to Weights & Biases for tracking. Also used GitHub Copilot with Grok Code Fast 1 to assist with complex error messages and compatibility issues between packages
+Student s253814 was in charge of setting up the initial framework for training the model and making a series of invoke tasks to prepare the data and train the model. Also handled setting up the Google Cloud Storage bucket for our dataset, integrating it with DVC for version-controlled data storage, and configuring the Vertex AI custom jobs to run our training container while ensuring results were logged to Weights & Biases for tracking. Added number of workers and possibility to allocate memory in pinned memory, for faster CPU->GPU data transfer. Also used GitHub Copilot with Grok Code Fast 1 to assist with complex error messages and compatibility issues between packages
 
 Student s
 
