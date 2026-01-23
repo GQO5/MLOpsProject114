@@ -1,0 +1,121 @@
+name: Test Monitoring API
+
+on:
+  push:
+    branches: [ main, feature/DataDrifting ]
+  pull_request:
+
+jobs:
+  test-endpoints:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          uv sync --extra cpu
+          uv add requests pillow  # Added these so test_monitoring.py works
+
+      - name: Pull Data & Model (DVC)
+        shell: bash
+        env:
+          GCS_KEY_CONTENT: ${{ secrets.GCS_DOCKER_IMAGES_KEY }}
+        run: |
+          echo "$GCS_KEY_CONTENT" > gcs_key.json
+          uv run dvc remote modify --local storage credentialpath gcs_key.json
+          uv run dvc pull
+
+      - name: Start API and Run Tests
+        env:
+          ENABLE_DATA_COLLECTION: "True"
+          GCS_BUCKET_NAME: "group114-bucket"
+          GOOGLE_APPLICATION_CREDENTIALS: "gcs_key.json"
+          MODEL_PATH: "models/model_20260118_135410_FT_True.pth"
+          PYTHONPATH: "." 
+        run: |
+          # 1. Start the API in the background
+          # We force 127.0.0.1 to avoid IPv6 confusion
+          nohup uv run uvicorn src.mlopsproject.api:app --host 127.0.0.1 --port 8000 > server.log 2>&1 &
+          
+          # 2. ROBUST WAIT: Loop until the server answers (max 30 seconds)
+          echo "Waiting for API to be healthy..."
+          for i in {1..30}; do
+            if curl -s http://127.0.0.1:8000/health > /dev/null; then
+              echo "Server is UP!"
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 1
+          done
+          
+          # 3. If server is still dead after 30s, print logs and fail
+          if ! curl -s http://127.0.0.1:8000/health > /dev/null; then
+            echo "❌ Server failed to start. Printing logs:"
+            cat server.log
+            exit 1
+          fi
+          
+          # 4. Create the test script (Updated to use 127.0.0.1)
+          cat <<EOF > test_monitoring.py
+          import requests
+          import sys
+          import time
+          from PIL import Image
+          import io
+
+          # Create a dummy image
+          img = Image.new('RGB', (224, 224), color='red')
+          buf = io.BytesIO()
+          img.save(buf, format='JPEG')
+          img_bytes = buf.getvalue()
+
+          print("--- Testing Task 2: Data Collection (/predict) ---")
+          try:
+              files = {'file': ('test.jpg', img_bytes, 'image/jpeg')}
+              # USE 127.0.0.1 EXPLICITLY
+              res = requests.post("http://127.0.0.1:8000/predict", files=files)
+              if res.status_code == 200:
+                  print("[PASS] Prediction successful.")
+              else:
+                  print(f"[FAIL] Predict returned {res.status_code}: {res.text}")
+                  sys.exit(1)
+          except Exception as e:
+              print(f"[FAIL] Could not connect to /predict: {e}")
+              sys.exit(1)
+
+          print("\n--- Testing Task 3: Drift API (/drift) ---")
+          try:
+              res = requests.get("http://127.0.0.1:8000/drift")
+              if res.status_code == 200:
+                  print("[PASS] Drift API returned a report.")
+              else:
+                  print(f"[FAIL] Drift API returned {res.status_code}: {res.text}")
+                  sys.exit(1)
+          except Exception as e:
+              print(f"[FAIL] Could not connect to /drift: {e}")
+              sys.exit(1)
+          
+          print("\nALL MONITORING TESTS PASSED")
+          EOF
+          
+          # 5. Run the test script
+          uv run python test_monitoring.py
+
+      - name: Show Server Logs (On Failure)
+        if: failure()
+        run: cat server.log
+
+      - name: Cleanup
+        if: always()
+        run: rm -f gcs_key.json

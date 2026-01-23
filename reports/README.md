@@ -69,7 +69,7 @@ will check the repositories and the code to verify your answers.
 * [X] Write one or multiple configurations files for your experiments (M11)
 * [X] Used Hydra to load the configurations and manage your hyperparameters (M11)
 * [ ] Use profiling to optimize your code (M12)
-* [ ] Use logging to log important events in your code (M14)
+* [X] Use logging to log important events in your code (M14)
 * [X] Use Weights & Biases to log training progress and other important metrics/artifacts in your code (M14)
 * [X] Consider running a hyperparameter optimization sweep (M14)
 * [ ] Use PyTorch-lightning (if applicable) to reduce the amount of boilerplate in your code (M15)
@@ -80,9 +80,9 @@ will check the repositories and the code to verify your answers.
 * [X] Write unit tests related to model construction and or model training (M16)
 * [ ] Calculate the code coverage (M16)
 * [X] Get some continuous integration running on the GitHub repository (M17)
-* [ ] Add caching and multi-os/python/pytorch testing to your continuous integration (M17)
+* [X] Add caching and multi-os/python/pytorch testing to your continuous integration (M17)
 * [X] Add a linting step to your continuous integration (M17)
-* [ ] Add pre-commit hooks to your version control setup (M18)
+* [X] Add pre-commit hooks to your version control setup (M18)
 * [ ] Add a continues workflow that triggers when data changes (M19)
 * [ ] Add a continues workflow that triggers when changes to the model registry is made (M19)
 * [X] Create a data storage in GCP Bucket for your data and link this with your data version control setup (M21)
@@ -90,7 +90,7 @@ will check the repositories and the code to verify your answers.
 * [ ] Get your model training in GCP using either the Engine or Vertex AI (M21)
 * [X] Create a FastAPI application that can do inference using your model (M22)
 * [X] Deploy your model in GCP using either Functions or Run as the backend (M23)
-* [ ] Write API tests for your application and setup continues integration for these (M24)
+* [X] Write API tests for your application and setup continues integration for these (M24)
 * [X] Load test your application (M24)
 * [X] Create a more specialized ML-deployment API using either ONNX or BentoML, or both (M25)
 * [X] Create a frontend for your API (M26)
@@ -105,7 +105,7 @@ will check the repositories and the code to verify your answers.
 * [ ] Create one or more alert systems in GCP to alert you if your app is not behaving correctly (M28)
 * [ ] If applicable, optimize the performance of your data loading using distributed data loading (M29)
 * [ ] If applicable, optimize the performance of your training pipeline by using distributed training (M30)
-* [ ] Play around with quantization, compilation and pruning for you trained models to increase inference speed (M31)
+* [X] Play around with quantization, compilation and pruning for you trained models to increase inference speed (M31)
 
 ### Extra
 
@@ -134,7 +134,7 @@ will check the repositories and the code to verify your answers.
 >
 > Answer:
 
-s253733, s253814, s252802
+s253733, s253814, s252802, s253695
 
 ### Question 3
 > **Did you end up using any open-source frameworks/packages not covered in the course during your project? If so**
@@ -322,7 +322,7 @@ We used Hydra to handle our training hyperparameters. Inside configs/, we create
 >
 > Answer:
 
-We ensured reproducibility by strictly decoupling the configuration from the code using Hydra. We use Weights & Biases (WandB) to automatically log the hyperparameters and resulting metrics used whenever an experiment is run.
+We ensured reproducibility by strictly decoupling the configuration from the code using Hydra, and including a seed to ensure consistent results. One can set the seed_run parameter in configs/run.yaml. We use Weights & Biases (WandB) to automatically log the hyperparameters and resulting metrics used whenever an experiment is run. Whenever an experiment is started, the program's entry point is at src/mlopsproject/run.py, where we load our experiment configuration using Hydra and instantiate the necessary components to start the training process, taking advantage of a dependency injection pattern, which makes it very easy to swap components, such as different datasets, models, trainers, or loggers if needed.
 
 ### Question 14
 
@@ -354,7 +354,7 @@ We ensured reproducibility by strictly decoupling the configuration from the cod
 >
 > Answer:
 
---- question 15 fill here ---
+Docker is an amazing tool that we used to containerize important parts of our project, ensuring consistency across different environments, and simplifying deployments in the cloud. In our case, we have 4 main Docker images: train, frontend, backend (BentoML), and api (FastAPI). Each container is designed to accomplish a specific task, such as initializing our streamlit frontend service, starting a training job, or initializing our backend API, all with their corresponding dependencies, such as python packages or required files to run. To simplify the building and running process of the frontend and backend images, which typically require long commands with multiple flags, we created different tasks using invoke to simplyfy this. For example, to build the backend image, one would run "uv run invoke build-backend-docker" and to run it "uv run invoke run-frontend-docker", where you could specify different parameters such as the port. You can find our backend docker file here: https://github.com/GQO5/MLOpsProject114/blob/main/dockerfiles/backend.dockerfile.
 
 ### Question 16
 
@@ -386,7 +386,14 @@ We debugged our experiments using a hybrid approach. Using the VS Code debugger,
 >
 > Answer:
 
---- question 17 fill here ---
+For our project, we utilized several GCP services:
+1. Compute Engine: We used Compute Engine to create virtual machines (VMs) for training our machine learning models. This service provided us with scalable computing resources, allowing us to choose VM types that matched our computational needs.
+2. Cloud Storage (GCP Bucket): We used Cloud Storage to store our dataset.
+3. Artifact Registry: We used Artifact Registry to store and manage our Docker images. This service allowed us to easily deploy our containerized applications.
+4. Cloud Build: We used Cloud Build to automate the building and deployment of our Docker images.
+5. Cloud run: We used Cloud run service to deploy our Frontend and Backend APIs in a serverless environment.
+6. Vertex AI: [...].
+7. Monitoring: [...]
 
 ### Question 18
 
@@ -409,8 +416,10 @@ We debugged our experiments using a hybrid approach. Using the VS Code debugger,
 > **You can take inspiration from [this figure](figures/bucket.png).**
 >
 > Answer:
+> 
+![Bucket1](figures/Bucket1.png)
 
---- question 19 fill here ---
+![Bucket2](figures/Bucket2.png)
 
 ### Question 20
 
@@ -419,7 +428,7 @@ We debugged our experiments using a hybrid approach. Using the VS Code debugger,
 >
 > Answer:
 
---- question 20 fill here ---
+![Artifact registry](figures/ArtifactRegistry.png)
 
 ### Question 21
 
@@ -428,7 +437,7 @@ We debugged our experiments using a hybrid approach. Using the VS Code debugger,
 >
 > Answer:
 
---- question 21 fill here ---
+![Cloud build history](figures/CloudBuild.png)
 
 ### Question 22
 
@@ -460,7 +469,7 @@ We debugged our experiments using a hybrid approach. Using the VS Code debugger,
 >
 > Answer:
 
---- question 23 fill here ---
+We did write APIs for our model using both FastAPI, as well as a more specialized version using BentoML. Both do the exact same thing, on startup they load the model, and serve a /predict endpoint that takes an image and returns the prediction from our model. In order to output the correct predictions, an extra function had to be added called unscale(), which takes the raw, scaled outputs from the model and converts them back to the original scaled making used of the mean and std values used during preprocessing. In this case, both APIs have been containerized and deployed to GCP Cloud Run, but our frontend only interacts with the one specified in the Environment Variable called "BACKEND", which takes the path to the [backend url](https://backend-582302018737.europe-west1.run.app).
 
 ### Question 24
 
@@ -476,7 +485,7 @@ We debugged our experiments using a hybrid approach. Using the VS Code debugger,
 >
 > Answer:
 
---- question 24 fill here ---
+Firstly, we designed our APIs and frontend and made sure that they were able to communicate locally, using localhost addresses. Once we confirmed that it worked locally, we then built the docker images for each part of the application and again, tested that they were able to interact, sending requests and visualizing the results in the frontend. Once that was confirmed, we then pushed the images to GCP Artifact Registry, and deployed them to Cloud run manually for the first time. This was the last check to confirm that everything worked as intended. Finally, a CD pipeline was created. The idea was to create a GCP trigger that automatically build, pushed and deployed the frontend and backend when new code was pushed to main. However, not every push to main contains changes to these, so a github action was created which detects individual changes to either the front, back, or both. Once a change is detected, a job is executed, which does the build, push and deploy steps automatically. This allows deploying only when necessary. To invoke the service, a user would simply navigate to the frontend url (https://frontend-582302018737.europe-west1.run.app/) and upload an image.
 
 ### Question 25
 
@@ -491,7 +500,7 @@ We debugged our experiments using a hybrid approach. Using the VS Code debugger,
 >
 > Answer:
 
---- question 25 fill here ---
+Yes, we performed both unit testing and load testing of our BentoML API. For unit testing, we used Pytest to create a simple test that generates a dummy image, posts it to the /predict endpoint, and checks the response status code and that the correct keys are present in the response, as well as their value types. For load testing, we used Locust to simulate users accessing our front end "/" endpoint, as well as posting images to the "/predict" endpoint from the backend. This process was simplified by creating a task using invoke, load_test_backend and load_test_frontend, where you can specify different parameters to control the load test. The results showed that for a test of 200 users with a spawn rate of 30 users/s for 1 minute, the backend was able to handle the load with an average response time of 1500ms, 68.98 req/s, and a failure rate of 11%, mostly caused by "POST /predict: HTTPError('503 Server Error: Service Unavailable for url: /predict')". Most probably, those failures were due to the cold start of a second instance that had to be created due to the high load.
 
 ### Question 26
 
@@ -506,7 +515,7 @@ We debugged our experiments using a hybrid approach. Using the VS Code debugger,
 >
 > Answer:
 
---- question 26 fill here ---
+Yes, we implemented a monitoring system to ensure the longevity and reliability of our deployed model. Our solution uses the FastAPI inference endpoint to log all incoming request images and generated predictions asynchronously to Google Cloud Storage. This creates a persistent historical record of production data. To monitor for degradation, we integrated Evidently AI. Evidently AI periodically retrieves live data and runs statistical tests to compare it with our training reference data. It automatically flags significant data drift. Additionally, we incorporated a robustness check into our CI/CD pipeline that injects synthetic noise into the validation data to measure mean squared error (MSE) degradation. This allows us to proactively assess how the model handles potential quality drops before they affect users.
 
 ## Overall discussion of project
 
@@ -541,7 +550,7 @@ We debugged our experiments using a hybrid approach. Using the VS Code debugger,
 >
 > Answer:
 
---- question 28 fill here ---
+Our project was focused towards deploying an AI application that a user could interact with. Of course, no everyone is comfortable using APIs directly, so instead we created a user-friendly frontend using Streamlit, and customized it with html generated with the help of [Google Stitch](https://stitch.withgoogle.com/), which created a minimalistic but modern design. This html was then integrated into our Streamlit app with the help of the html() function and a frontend_utils.py file. The frontend simply takes a user image input, sends it to the backend API for inference and returns the prediction which is the displayed to the user. Feel free to [try it out](https://frontend-582302018737.europe-west1.run.app/) (The backend might take a minute to start after the first input is given).
 
 ### Question 29
 
@@ -591,3 +600,14 @@ We debugged our experiments using a hybrid approach. Using the VS Code debugger,
 > Answer:
 
 --- question 31 fill here ---
+
+
+
+Student s252802 was in charge of setting up the initial project structure using Cookiecutter, managing the GitHub repository, and writing the Dockerfiles for train.Also, implemented the testing framework (including code coverage) and developed the data drift detection pipeline to monitor model performance
+
+
+
+In preparing this work, we used large language models (LLMs), such as ChatGPT, to help with
+aspects of writing, coding, and creating a figures. Specifically, we used generative AI tools to paraphrase
+and refine text passages to improve clarity, readability, and adherence to academic style.  Additionally, LLMs helped verify code
+correctness and suggest modifications to improve computational efficiency and performance. 
