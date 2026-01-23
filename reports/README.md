@@ -102,8 +102,8 @@ will check the repositories and the code to verify your answers.
 * [ ] Deploy to the cloud a drift detection API (M27)
 * [ ] Instrument your API with a couple of system metrics (M28)
 * [ ] Setup cloud monitoring of your instrumented application (M28)
-* [ ] Create one or more alert systems in GCP to alert you if your app is not behaving correctly (M28)
-* [ ] If applicable, optimize the performance of your data loading using distributed data loading (M29)
+* [X] Create one or more alert systems in GCP to alert you if your app is not behaving correctly (M28)
+* [X] If applicable, optimize the performance of your data loading using distributed data loading (M29)
 * [ ] If applicable, optimize the performance of your training pipeline by using distributed training (M30)
 * [X] Play around with quantization, compilation and pruning for you trained models to increase inference speed (M31)
 
@@ -550,7 +550,7 @@ Yes, we implemented a monitoring system to ensure the longevity and reliability 
 >
 > Answer:
 
-Our project was focused towards deploying an AI application that a user could interact with. Of course, no everyone is comfortable using APIs directly, so instead we created a user-friendly frontend using Streamlit, and customized it with html generated with the help of [Google Stitch](https://stitch.withgoogle.com/), which created a minimalistic but modern design. This html was then integrated into our Streamlit app with the help of the html() function and a frontend_utils.py file. The frontend simply takes a user image input, sends it to the backend API for inference and returns the prediction which is the displayed to the user. Feel free to [try it out](https://frontend-582302018737.europe-west1.run.app/) (The backend might take a minute to start after the first input is given).
+Our project was focused towards deploying an AI application that a user could interact with. Of course, no everyone is comfortable using APIs directly, so instead we created a user-friendly frontend using Streamlit, and customized it with html generated with the help of [Google Stitch](https://stitch.withgoogle.com/), which created a minimalistic but modern design. This html was then integrated into our Streamlit app with the help of the html() function and a frontend_utils.py file. The frontend simply takes a user image input, sends it to the backend API for inference and returns the prediction which is the displayed to the user. Feel free to [try it out](https://frontend-582302018737.europe-west1.run.app/) (The backend, BentoML, might take a minute to start after the first input is given).
 
 ### Question 29
 
@@ -567,7 +567,13 @@ Our project was focused towards deploying an AI application that a user could in
 >
 > Answer:
 
---- question 29 fill here ---
+![Cloud build history](figures/SystemArchitecture.png)
+
+The starting point of our architecture is our local development environments, where we collaboratively develop and test our code using GitHub for version control. Each team member works on feature branches, and changes are merged into the main branch via pull requests, triggering our CI/CD pipelines. We implemented Hydra for training configuration, WandB for experiment tracking, pre-commit hooks for checking code quality before commits, and DVC for data versioning.
+
+When code is pushed to the main branch, GitHub Actions automatically initiates a series of workflows. First, our CI pipeline runs linting and unit tests to ensure code quality and correctness, as well as generate a data drift report. In the case where changes are detected in the frontend/ or bento_backend/ directories found in src/mlopsproject/ on push to main, a CD pipeline is triggered that first checks what part of the application has changed (frontend, backend or both) and then builds, pushes and deploys the corresponding Docker images into GCP Cloud Run. For continuous ML, a webhook from WandB executes a GH workflow whenever a new model is registered, publishing a model report using CML. The Drift Check retrieves live data from our Google Cloud bucket. Currently, dummy data is used in the code. Then, Evidently AI compares the data to your original training data. This process detects significant shifts in data distribution and generates a "drift report" to alert you when the model becomes unreliable. 
+
+Once everything is deployed, our users can access our UI and upload dish images to receive predictions from our model in real-time. One can also start load test ing the frontend and backend using invoke tasks.
 
 ### Question 30
 
@@ -605,7 +611,9 @@ Our project was focused towards deploying an AI application that a user could in
 
 Student s252802 was in charge of setting up the initial project structure using Cookiecutter, managing the GitHub repository, and writing the Dockerfiles for train.Also, implemented the testing framework (including code coverage) and developed the data drift detection pipeline to monitor model performance
 
+Student s253814 firstly worked on setting up the team's GCP environment, configuring service accounts, requesting a GPU, and setting permissions. Incorporated Hydra on top of the initial training pipeline to manage hyperparameters and configurations following a dependency injection pattern. Also, designed and implemented the Frontend using Streamlit and integrated it with BentoML Backend API, together with their corresponding load testing scripts using Locust and a backend unittest using Pytest. Lastly, automated the build, pushing, and deployment of both Frontend and Backend (BentoML) using GCP Cloud and GitHub Actions only when specific files are changed on a push to main.
 
+All members...
 
 In preparing this work, we used large language models (LLMs), such as ChatGPT, to help with
 aspects of writing, coding, and creating a figures. Specifically, we used generative AI tools to paraphrase
