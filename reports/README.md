@@ -534,8 +534,7 @@ Yes, we implemented a monitoring system to ensure the longevity and reliability 
 >
 > Answer:
 
---- question 27 fill here ---
-
+During the development of our project, we spent a total amount of $30.66 USD on multple GCP services. The most expensive service in our case was Cloud Run, with a total of $14.19 USD, primarily due to the continuous deployment of our frontend and backend services, as well as the load testings that we performed. Followed by that is the Container Registry Vulnerability Scanning service, which surprisingly costed $12.22 USD. Overall, working in the cloud, especially for the first time, is a great experience. Being able to access computational, storage, and deployment resources based on your needs is very convienient when working on machine learning projects. Now that we have experience working in the cloud, we can see how it can greatly enhance productivity and scalability for future projects.
 ### Question 28
 
 > **Did you implement anything extra in your project that is not covered by other questions? Maybe you implemented**
