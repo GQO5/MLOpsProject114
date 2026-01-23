@@ -42,20 +42,31 @@ jobs:
           GCS_BUCKET_NAME: "group114-bucket"
           GOOGLE_APPLICATION_CREDENTIALS: "gcs_key.json"
           MODEL_PATH: "models/model_20260118_135410_FT_True.pth"
-          PYTHONPATH: "."  # <--- CRITICAL FIX 1
+          PYTHONPATH: "." 
         run: |
-          # 1. Start the API in the background with the CORRECT path
-          # We redirect output to server.log so we can debug if needed
-          nohup uv run uvicorn src.mlopsproject.api:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
+          # 1. Start the API in the background
+          # We force 127.0.0.1 to avoid IPv6 confusion
+          nohup uv run uvicorn src.mlopsproject.api:app --host 127.0.0.1 --port 8000 > server.log 2>&1 &
           
-          # 2. Wait 10 seconds for the server to boot up
-          echo "Waiting for API to start..."
-          sleep 10
+          # 2. ROBUST WAIT: Loop until the server answers (max 30 seconds)
+          echo "Waiting for API to be healthy..."
+          for i in {1..30}; do
+            if curl -s http://127.0.0.1:8000/health > /dev/null; then
+              echo "Server is UP!"
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 1
+          done
           
-          # 3. Print the first few lines of the log to confirm startup (like you just saw!)
-          head -n 20 server.log
+          # 3. If server is still dead after 30s, print logs and fail
+          if ! curl -s http://127.0.0.1:8000/health > /dev/null; then
+            echo "❌ Server failed to start. Printing logs:"
+            cat server.log
+            exit 1
+          fi
           
-          # 4. Create the test script
+          # 4. Create the test script (Updated to use 127.0.0.1)
           cat <<EOF > test_monitoring.py
           import requests
           import sys
@@ -72,7 +83,8 @@ jobs:
           print("--- Testing Task 2: Data Collection (/predict) ---")
           try:
               files = {'file': ('test.jpg', img_bytes, 'image/jpeg')}
-              res = requests.post("http://localhost:8000/predict", files=files)
+              # USE 127.0.0.1 EXPLICITLY
+              res = requests.post("http://127.0.0.1:8000/predict", files=files)
               if res.status_code == 200:
                   print("[PASS] Prediction successful.")
               else:
@@ -83,10 +95,8 @@ jobs:
               sys.exit(1)
 
           print("\n--- Testing Task 3: Drift API (/drift) ---")
-          # Give the background task a moment to save data (optional but good practice)
-          time.sleep(2)
           try:
-              res = requests.get("http://localhost:8000/drift")
+              res = requests.get("http://127.0.0.1:8000/drift")
               if res.status_code == 200:
                   print("[PASS] Drift API returned a report.")
               else:
