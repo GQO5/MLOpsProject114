@@ -41,18 +41,13 @@ jobs:
 
       - name: Start API and Run Tests
         env:
-          # Enable Data Collection so /predict tries to upload to GCS
           ENABLE_DATA_COLLECTION: "True"
           GCS_BUCKET_NAME: "group114-bucket"
-          
-          # Give Python access to the key file we created in the DVC step
           GOOGLE_APPLICATION_CREDENTIALS: "gcs_key.json"
-          
-          # Ensure this points to the model DVC just pulled
           MODEL_PATH: "models/model_20260118_135410_FT_True.pth" 
         run: |
-          # 1. Start the API in the background using 'nohup'
-          # We redirect logs to server.log so we can debug if it fails
+          # 1. Start the API in the background
+          # CRITICAL FIX: We use 'src.mlopsproject.api:app' because your file is in src/mlopsproject/api.py
           nohup uv run uvicorn src.mlopsproject.api:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
           
           # 2. Wait 10 seconds for the server to boot up
@@ -67,7 +62,7 @@ jobs:
           from PIL import Image
           import io
 
-          # Create a simple dummy image (red square)
+          # Create a simple dummy image
           img = Image.new('RGB', (224, 224), color='red')
           buf = io.BytesIO()
           img.save(buf, format='JPEG')
@@ -81,21 +76,18 @@ jobs:
                   print("[PASS] Prediction successful.")
               else:
                   print(f"[FAIL] Predict returned {res.status_code}: {res.text}")
+                  # Print server logs to see why it failed
                   sys.exit(1)
           except Exception as e:
               print(f"[FAIL] Could not connect to /predict: {e}")
               sys.exit(1)
 
           print("\n--- Testing Task 3: Drift API (/drift) ---")
-          # Wait a moment for the background task to upload the data
           time.sleep(2)
           try:
               res = requests.get("http://localhost:8000/drift")
               if res.status_code == 200:
                   print("[PASS] Drift API returned a report.")
-                  # Optional: Check if HTML is returned
-                  if "<html" in res.text.lower():
-                      print("[PASS] Response contains HTML.")
               else:
                   print(f"[FAIL] Drift API returned {res.status_code}: {res.text}")
                   sys.exit(1)
