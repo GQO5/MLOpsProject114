@@ -23,38 +23,39 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: uv sync --extra cpu
+        run: |
+          uv sync --extra cpu
+          uv add requests pillow  # Added these so test_monitoring.py works
 
       - name: Pull Data & Model (DVC)
         shell: bash
         env:
           GCS_KEY_CONTENT: ${{ secrets.GCS_DOCKER_IMAGES_KEY }}
         run: |
-          # 1. Create key file for DVC
           echo "$GCS_KEY_CONTENT" > gcs_key.json
-          
-          # 2. Configure and Pull
           uv run dvc remote modify --local storage credentialpath gcs_key.json
           uv run dvc pull
-          
-          # Note: We keep gcs_key.json because the API might need it below
 
       - name: Start API and Run Tests
         env:
           ENABLE_DATA_COLLECTION: "True"
           GCS_BUCKET_NAME: "group114-bucket"
           GOOGLE_APPLICATION_CREDENTIALS: "gcs_key.json"
-          MODEL_PATH: "models/model_20260118_135410_FT_True.pth" 
+          MODEL_PATH: "models/model_20260118_135410_FT_True.pth"
+          PYTHONPATH: "."  # <--- CRITICAL FIX 1
         run: |
-          # 1. Start the API in the background
-          # CRITICAL FIX: We use 'src.mlopsproject.api:app' because your file is in src/mlopsproject/api.py
+          # 1. Start the API in the background with the CORRECT path
+          # We redirect output to server.log so we can debug if needed
           nohup uv run uvicorn src.mlopsproject.api:app --host 0.0.0.0 --port 8000 > server.log 2>&1 &
           
           # 2. Wait 10 seconds for the server to boot up
           echo "Waiting for API to start..."
           sleep 10
           
-          # 3. Create a Python script to test the endpoints
+          # 3. Print the first few lines of the log to confirm startup (like you just saw!)
+          head -n 20 server.log
+          
+          # 4. Create the test script
           cat <<EOF > test_monitoring.py
           import requests
           import sys
@@ -62,7 +63,7 @@ jobs:
           from PIL import Image
           import io
 
-          # Create a simple dummy image
+          # Create a dummy image
           img = Image.new('RGB', (224, 224), color='red')
           buf = io.BytesIO()
           img.save(buf, format='JPEG')
@@ -76,13 +77,13 @@ jobs:
                   print("[PASS] Prediction successful.")
               else:
                   print(f"[FAIL] Predict returned {res.status_code}: {res.text}")
-                  # Print server logs to see why it failed
                   sys.exit(1)
           except Exception as e:
               print(f"[FAIL] Could not connect to /predict: {e}")
               sys.exit(1)
 
           print("\n--- Testing Task 3: Drift API (/drift) ---")
+          # Give the background task a moment to save data (optional but good practice)
           time.sleep(2)
           try:
               res = requests.get("http://localhost:8000/drift")
@@ -98,7 +99,7 @@ jobs:
           print("\nALL MONITORING TESTS PASSED")
           EOF
           
-          # 4. Run the test script
+          # 5. Run the test script
           uv run python test_monitoring.py
 
       - name: Show Server Logs (On Failure)
