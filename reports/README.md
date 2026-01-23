@@ -515,7 +515,7 @@ Yes, we performed both unit testing and load testing of our BentoML API. For uni
 >
 > Answer:
 
---- question 26 fill here ---
+Yes, we implemented a monitoring system to ensure the longevity and reliability of our deployed model. Our solution uses the FastAPI inference endpoint to log all incoming request images and generated predictions asynchronously to Google Cloud Storage. This creates a persistent historical record of production data. To monitor for degradation, we integrated Evidently AI. Evidently AI periodically retrieves live data and runs statistical tests to compare it with our training reference data. It automatically flags significant data drift. Additionally, we incorporated a robustness check into our CI/CD pipeline that injects synthetic noise into the validation data to measure mean squared error (MSE) degradation. This allows us to proactively assess how the model handles potential quality drops before they affect users.
 
 ## Overall discussion of project
 
@@ -600,3 +600,14 @@ Our project was focused towards deploying an AI application that a user could in
 > Answer:
 
 --- question 31 fill here ---
+
+
+
+
+
+
+
+In preparing this work, we used large language models (LLMs), such as ChatGPT, to help with
+aspects of writing, coding, and creating a figures. Specifically, we used generative AI tools to paraphrase
+and refine text passages to improve clarity, readability, and adherence to academic style.  Additionally, LLMs helped verify code
+correctness and suggest modifications to improve computational efficiency and performance. 
