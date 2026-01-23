@@ -19,14 +19,14 @@ def check_robustness(model_path: str, noise_lvl: float = 0.5):
     # load_data() returns 8 values. We strictly need the test_loader (index 2).
     # We ignore the rest (_)
     _, _, test_loader, _, _, _, _, _ = load_data()
-    
+
     # 2. Initialize Model Architecture
     print(f"Initializing model architecture...")
-    
+
     # Your load_model function expects a DictConfig, so we pass an empty one.
-    dummy_cfg = DictConfig({}) 
-    model = load_model(dummy_cfg) 
-    
+    dummy_cfg = DictConfig({})
+    model = load_model(dummy_cfg)
+
     # 3. Load Trained Weights
     print(f"Loading trained weights from {model_path}...")
     try:
@@ -49,7 +49,7 @@ def check_robustness(model_path: str, noise_lvl: float = 0.5):
 
     # 5. Run Experiment
     print("\n--- Starting Robustness Check ---")
-    
+
     # A. Baseline (Clean Data)
     baseline_error = evaluate_loss(model, test_loader, criterion, noise=0.0)
     print(f"Baseline MSE (Clean Data): {baseline_error:.4f}")
@@ -61,9 +61,9 @@ def check_robustness(model_path: str, noise_lvl: float = 0.5):
     # 6. Save Report
     output_path = Path("reports/data_drift_robustness.txt")
     output_path.parent.mkdir(exist_ok=True, parents=True)
-    
+
     degradation = drifted_error - baseline_error
-    
+
     with open(output_path, "w") as f:
         f.write("MLOps Data Drift Robustness Report\n")
         f.write("==================================\n")
@@ -72,7 +72,7 @@ def check_robustness(model_path: str, noise_lvl: float = 0.5):
         f.write(f"Baseline MSE: {baseline_error:.4f}\n")
         f.write(f"Drifted MSE:  {drifted_error:.4f}\n")
         f.write(f"Degradation:  {degradation:.4f}\n")
-        
+
         if degradation > 0:
             f.write("\nRESULT: PASSED. Model performance degrades with drift, verifying sensitivity.")
         else:
@@ -84,12 +84,12 @@ def evaluate_loss(model, loader, criterion, noise=0.0):
     """Calculate average MSE over the loader with optional noise injection."""
     total_loss = 0
     batches = 0
-    
+
     with torch.no_grad():
         for images, targets in loader:
             images = images.to(DEVICE)
             targets = targets.to(DEVICE)
-            
+
             # --- DRIFT INJECTION ---
             if noise > 0:
                 # Add noise to normalized images
@@ -101,13 +101,13 @@ def evaluate_loss(model, loader, criterion, noise=0.0):
             loss = criterion(outputs, targets)
             total_loss += loss.item()
             batches += 1
-            
+
     return total_loss / batches
 
 if __name__ == "__main__":
     import argparse
     import os
-    
+
     # 1. Parse arguments passed from tasks.py
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_path", type=str, default=None, help="Path to the specific model file")
@@ -122,7 +122,7 @@ if __name__ == "__main__":
         # Auto-detect the latest model if no path provided
         project_root = Path(__file__).parent.parent.parent
         models_dir = project_root / "models"
-        
+
         # Check if directory exists
         if not models_dir.exists():
             print(f"Directory not found: {models_dir}")
@@ -130,7 +130,7 @@ if __name__ == "__main__":
             exit(1)
 
         list_of_files = list(models_dir.glob('*.pth'))
-        
+
         if list_of_files:
             latest_model = max(list_of_files, key=os.path.getctime)
             print(f"Automatically found latest model: {latest_model}")

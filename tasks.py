@@ -204,5 +204,5 @@ def check_drift(ctx: Context, model_path="") -> None:
     cmd = f"python src/{PROJECT_NAME}/data_drifting.py"
     if model_path:
         cmd += f" --model_path {model_path}"
-        
+
     ctx.run(cmd, echo=True, pty=not WINDOWS)

@@ -76,7 +76,7 @@ def load_model_on_startup():
         tmp_path = "/tmp/model.pth"
         print(f"Downloading model from GCS: {MODEL_GCS_URI} -> {tmp_path}")
         download_from_gcs(MODEL_GCS_URI, tmp_path)
-        model_path = tmp_path   
+        model_path = tmp_path
 
     # Load model weights once
     state = torch.load(model_path, map_location=DEVICE)
@@ -148,7 +148,7 @@ async def check_drift(days: int = 7):
     """
     # A. Load Live Data from GCS
     current_data = load_recent_data_from_gcs(BUCKET_NAME, days=days)
-    
+
     if current_data.empty:
         return """
         <html>
@@ -170,7 +170,7 @@ async def check_drift(days: int = 7):
 
     # Ensure columns match
     cols = ['total_calories', 'total_fat', 'total_carb', 'total_protein']
-    
+
     # Filter to ensure we only compare the numeric columns
     current_data = current_data[cols]
     reference_data = reference_data[cols]
@@ -178,7 +178,7 @@ async def check_drift(days: int = 7):
     # C. Run Evidently Report
     report = Report(metrics=[DataDriftPreset()])
     report.run(reference_data=reference_data, current_data=current_data)
-    
+
     # D. Return the HTML string directly
     # report.get_html() generates the full interactive dashboard string
     return report.get_html()

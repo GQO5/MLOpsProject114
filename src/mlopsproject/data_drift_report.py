@@ -24,7 +24,7 @@ except FileNotFoundError:
 
 # --- METHOD 1: The Visual Report (For Humans/Homework) ---
 report = Report(metrics=[
-    DataDriftPreset(), 
+    DataDriftPreset(),
     TargetDriftPreset()
 ])
 report.run(reference_data=reference_data, current_data=current_data)
