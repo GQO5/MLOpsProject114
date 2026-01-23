@@ -1,0 +1,11 @@
+workerPoolSpecs:
+- containerSpec:
+    imageUri: europe-west1-docker.pkg.dev/mlops-group114/mlops-repo/train:latest
+    env:
+    - name: WANDB_API_KEY
+      value: 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
+  machineSpec:
+    machineType: n1-standard-8
+    # acceleratorType: NVIDIA_TESLA_T4
+    # acceleratorCount: 1
+  replicaCount: 1
