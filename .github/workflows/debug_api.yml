@@ -1,0 +1,73 @@
+name: Debug API Crash
+
+on:
+  push:
+    branches: [ main, feature/DataDrifting ]
+  workflow_dispatch: # Allows you to click "Run" manually in GitHub
+
+jobs:
+  debug-startup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        # We explicitly add the monitoring libraries here to be safe
+        run: |
+          uv sync --extra cpu
+          uv add evidently pandas fastjson
+
+      - name: Pull Data & Model (DVC)
+        shell: bash
+        env:
+          GCS_KEY_CONTENT: ${{ secrets.GCS_DOCKER_IMAGES_KEY }}
+        run: |
+          echo "$GCS_KEY_CONTENT" > gcs_key.json
+          uv run dvc remote modify --local storage credentialpath gcs_key.json
+          uv run dvc pull
+      
+      # --- DEBUGGING STEPS START HERE ---
+      
+      - name: 🔍 Debug - File System Check
+        run: |
+          echo "Listing 'models' directory:"
+          ls -R models/ || echo "Models directory not found!"
+          
+          echo "Listing root directory:"
+          ls -la
+
+      - name: 🔍 Debug - Dependency Check
+        run: |
+          echo "Checking installed packages:"
+          uv pip list | grep -E "evidently|pandas|fastapi|uvicorn"
+
+      - name: 💥 Nuclear Start - Force Error to Show
+        env:
+          ENABLE_DATA_COLLECTION: "True"
+          GCS_BUCKET_NAME: "group114-bucket"
+          GOOGLE_APPLICATION_CREDENTIALS: "gcs_key.json"
+          # UPDATE THIS IF YOUR LS COMMAND SHOWS A DIFFERENT FILENAME
+          MODEL_PATH: "models/model_20260118_135410_FT_True.pth" 
+        run: |
+          echo "Attempting to start API in foreground (5s timeout)..."
+          
+          # This runs the app directly. If it crashes, the error prints HERE.
+          # 'timeout' stops it after 10s so the job doesn't hang forever.
+          timeout 10s uv run uvicorn app:app --host 0.0.0.0 --port 8000 || true
+          
+          echo "If you see a Python error above (Traceback), that is your fix."
+
+      - name: Cleanup
+        if: always()
+        run: rm -f gcs_key.json
