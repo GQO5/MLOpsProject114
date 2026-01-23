@@ -148,7 +148,7 @@ s253733, s253814, s252802, s253695
 >
 > Answer:
 
-............  For code quality, we adopted Ruff which replaced multiple tools (like Flake8, Isort and Black) due to its superior speed. We also used Uv for dependency manangement which significantly reduced our environment setup time compared to Pip or Conda.
+Yes, we used Docker to enable consistent execution across local and cloud infrastructure. We also used Hydra for configuration management, allowing a clear separation of environment-specific and experiment-specific parameters, and Invoke to standardize development and training commands. For code quality, we adopted Ruff, which replaced multiple tools such as Flake8, Isort, and Black due to its superior speed. Additionally, we used Uv for dependency management, which significantly reduced environment setup time compared to Pip or Conda.
 
 ## Coding environment
 
