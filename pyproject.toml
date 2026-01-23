@@ -41,6 +41,7 @@ dependencies = [
   "markdown>=3.10",
   "omegaconf>=2.3.0",
   "google-cloud-storage>=3.8.0",
+  "evidently>=0.7.20",
 ]
 [project.optional-dependencies]
 dev = [

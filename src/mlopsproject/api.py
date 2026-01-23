@@ -36,7 +36,7 @@ def download_from_gcs(gcs_uri: str, dst_path: str) -> None:
     client = storage.Client()
     bucket = client.bucket(bucket_name)
     blob = bucket.blob(blob_path)
-    blob.download_to_filename(dst_path) 
+    blob.download_to_filename(dst_path)
 
 
 
@@ -63,7 +63,7 @@ TARGET_COLS = ["total_calories", "total_fat", "total_carb", "total_protein"]
 def load_model_on_startup():
 
     model_path = MODEL_PATH
-    # Download model from GCS if needed 
+    # Download model from GCS if needed
     # Provisional: if a GCS URI is provided, download it to /tmp and use that file.
     if MODEL_GCS_URI:
         tmp_path = "/tmp/model.pth"
