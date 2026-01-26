@@ -22,7 +22,7 @@ jobs:
       frontend: ${{ steps.filter.outputs.frontend }}
       backend: ${{ steps.filter.outputs.backend }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       - uses: dorny/paths-filter@v3
         id: filter
@@ -41,7 +41,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set Frontend var
         run: echo "IMAGE_FRONT=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPO }}/${{ env.FRONT_IMAGE }}" >> $GITHUB_ENV
@@ -83,7 +83,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set Backend var
         run: echo "IMAGE_BACK=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPO }}/${{ env.BACK_IMAGE }}" >> $GITHUB_ENV
