@@ -52,7 +52,7 @@ jobs:
           credentials_json: ${{ secrets.GCS_DOCKER_IMAGES_KEY}}
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v3
 
       - name: Configure Docker for Google Cloud
         run: |
@@ -94,7 +94,7 @@ jobs:
           credentials_json: ${{ secrets.GCS_DOCKER_IMAGES_KEY}}
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v3
 
       - name: Build Backend Docker image using Cloud Build 
         run: |
